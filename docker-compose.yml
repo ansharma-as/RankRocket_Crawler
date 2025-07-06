@@ -1,0 +1,69 @@
+version: '3.8'
+
+services:
+  mongodb:
+    image: mongo:7.0
+    container_name: rankrocket-mongodb
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: password
+    volumes:
+      - mongodb_data:/data/db
+    networks:
+      - rankrocket-network
+
+  redis:
+    image: redis:7.0-alpine
+    container_name: rankrocket-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - rankrocket-network
+
+  backend:
+    build: ./backend
+    container_name: rankrocket-backend
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    environment:
+      - MONGODB_URL=mongodb://admin:password@mongodb:27017/rankrocket?authSource=admin
+      - REDIS_URL=redis://redis:6379
+      - DATABASE_NAME=rankrocket
+    depends_on:
+      - mongodb
+      - redis
+    volumes:
+      - ./backend:/app
+    networks:
+      - rankrocket-network
+
+  frontend:
+    build: ./frontend
+    container_name: rankrocket-frontend
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      - VITE_API_URL=http://localhost:8000
+    depends_on:
+      - backend
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    networks:
+      - rankrocket-network
+
+volumes:
+  mongodb_data:
+  redis_data:
+
+networks:
+  rankrocket-network:
+    driver: bridge

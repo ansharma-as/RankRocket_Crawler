@@ -1,0 +1,33 @@
+from pydantic_settings import BaseSettings
+from typing import List
+
+
+class Settings(BaseSettings):
+    PROJECT_NAME: str = "RankRocket"
+    API_V1_STR: str = "/api/v1"
+    
+    # Database
+    MONGODB_URL: str = "mongodb://localhost:27017"
+    DATABASE_NAME: str = "rankrocket"
+    
+    # CORS
+    ALLOWED_ORIGINS: List[str] = ["http://localhost:3000", "http://localhost:5173"]
+    
+    # Crawler settings
+    MAX_CONCURRENT_CRAWLS: int = 10
+    CRAWL_TIMEOUT: int = 30
+    USER_AGENT: str = "RankRocket/1.0 (+https://rankrocket.com)"
+    
+    # Background tasks
+    REDIS_URL: str = "redis://localhost:6379"
+    
+    # API Keys
+    GOOGLE_ANALYTICS_API_KEY: str = ""
+    PROXY_API_KEY: str = ""
+    
+    class Config:
+        env_file = ".env"
+        case_sensitive = True
+
+
+settings = Settings()
