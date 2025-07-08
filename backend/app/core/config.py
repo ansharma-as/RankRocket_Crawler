@@ -11,7 +11,7 @@ class Settings(BaseSettings):
     DATABASE_NAME: str = "rankrocket"
     
     # CORS
-    ALLOWED_ORIGINS: List[str] = ["http://localhost:3000", "http://localhost:5173"]
+    ALLOWED_ORIGINS: List[str] = ["*"]
     
     # Crawler settings
     MAX_CONCURRENT_CRAWLS: int = 10
