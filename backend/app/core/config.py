@@ -23,6 +23,8 @@ class Settings(BaseSettings):
     
     # API Keys
     GOOGLE_ANALYTICS_API_KEY: str = ""
+    GOOGLE_SEARCH_CONSOLE_API_KEY: str = ""
+    BING_WEBMASTER_API_KEY: str = ""
     PROXY_API_KEY: str = ""
     
     class Config:

@@ -58,6 +58,19 @@ class SEOMetrics(BaseModel):
     page_size: Optional[int] = None
     load_time: Optional[float] = None
     status_code: Optional[int] = None
+    structured_data: List[Dict[str, Any]] = []
+    og_tags: Dict[str, str] = {}
+    twitter_cards: Dict[str, str] = {}
+    performance_metrics: Dict[str, Any] = {}
+    accessibility_score: Optional[float] = None
+    mobile_friendly: Optional[bool] = None
+    core_web_vitals: Dict[str, float] = {}
+    content_analysis: Dict[str, Any] = {}
+    keyword_density: Dict[str, float] = {}
+    readability_score: Optional[float] = None
+    ssl_info: Dict[str, Any] = {}
+    robots_txt_info: Dict[str, Any] = {}
+    sitemap_info: Dict[str, Any] = {}
 
 
 class CrawlResult(BaseModel):

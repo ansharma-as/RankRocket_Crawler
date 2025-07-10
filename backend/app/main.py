@@ -5,7 +5,7 @@ import uvicorn
 
 from app.core.config import settings
 from app.core.database import init_db
-from app.routers import crawl, reports
+from app.routers import crawl, reports, advanced
 
 
 @asynccontextmanager
@@ -32,6 +32,7 @@ app.add_middleware(
 
 app.include_router(crawl.router, prefix="/api/v1", tags=["crawl"])
 app.include_router(reports.router, prefix="/api/v1", tags=["reports"])
+app.include_router(advanced.router, prefix="/api/v1/advanced", tags=["advanced"])
 
 
 @app.get("/")
