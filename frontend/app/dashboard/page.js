@@ -1,10 +1,12 @@
-import Dashboard from '@/components/Dashboard'
+'use client'
 
-export const metadata = {
-  title: 'Dashboard - RankRocket',
-  description: 'View your website SEO analysis reports and recommendations',
-}
+import Dashboard from '@/components/Dashboard'
+import ProtectedRoute from '@/components/ProtectedRoute'
 
 export default function DashboardPage() {
-  return <Dashboard />
+  return (
+    <ProtectedRoute>
+      <Dashboard />
+    </ProtectedRoute>
+  )
 }

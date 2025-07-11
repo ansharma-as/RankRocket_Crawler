@@ -1,10 +1,12 @@
-import AdvancedAnalytics from '@/components/AdvancedAnalytics'
+'use client'
 
-export const metadata = {
-  title: 'Analytics - RankRocket',
-  description: 'Advanced SEO analytics and performance insights',
-}
+import AdvancedAnalytics from '@/components/AdvancedAnalytics'
+import ProtectedRoute from '@/components/ProtectedRoute'
 
 export default function AnalyticsPage() {
-  return <AdvancedAnalytics />
+  return (
+    <ProtectedRoute>
+      <AdvancedAnalytics />
+    </ProtectedRoute>
+  )
 }

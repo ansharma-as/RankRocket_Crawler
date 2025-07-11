@@ -265,10 +265,10 @@ export default function Hero() {
                   whileTap={{ scale: 0.95 }}
                 >
                   <button
-                    onClick={() => document.querySelector('#url-form')?.scrollIntoView({ behavior: 'smooth' })}
+                    onClick={() => router.push('/signup')}
                     className="px-8 py-3 rounded-lg font-medium inline-flex items-center justify-center bg-gradient-to-r from-purple-500 to-purple-600 text-white hover:from-purple-600 hover:to-purple-700 transition-all duration-300 shadow-lg hover:shadow-xl"
                   >
-                    Start Free Analysis
+                    Get Started Free
                     <ChevronRight className="ml-2 h-5 w-5" />
                   </button>
                 </motion.div>
@@ -277,12 +277,12 @@ export default function Hero() {
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                 >
-                  <a
-                    href="#features"
+                  <button
+                    onClick={() => document.querySelector('#url-form')?.scrollIntoView({ behavior: 'smooth' })}
                     className="px-8 py-3 rounded-lg font-medium inline-flex items-center justify-center bg-white/10 text-gray-100 border border-white/20 hover:bg-white/20 transition-all duration-300"
                   >
-                    Explore Features
-                  </a>
+                    Try Free Analysis
+                  </button>
                 </motion.div>
               </motion.div>
               
@@ -587,7 +587,7 @@ export default function Hero() {
               className="inline-block"
             >
               <button
-                onClick={() => document.querySelector('#url-form')?.scrollIntoView({ behavior: 'smooth' })}
+                onClick={() => router.push('/signup')}
                 className="px-8 py-4 rounded-lg text-lg font-medium inline-flex items-center justify-center bg-gradient-to-r from-purple-500 to-purple-600 text-white hover:from-purple-600 hover:to-purple-700 transition-all duration-300 shadow-lg hover:shadow-xl"
               >
                 Get started for free

@@ -1,10 +1,12 @@
-import ScheduledCrawls from '@/components/ScheduledCrawls'
+'use client'
 
-export const metadata = {
-  title: 'Scheduled Crawls - RankRocket',
-  description: 'Manage your automated SEO crawling schedule',
-}
+import ScheduledCrawls from '@/components/ScheduledCrawls'
+import ProtectedRoute from '@/components/ProtectedRoute'
 
 export default function ScheduledCrawlsPage() {
-  return <ScheduledCrawls />
+  return (
+    <ProtectedRoute>
+      <ScheduledCrawls />
+    </ProtectedRoute>
+  )
 }
