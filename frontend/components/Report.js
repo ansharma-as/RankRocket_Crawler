@@ -19,6 +19,7 @@ import {
   TrendingUp,
   Hash
 } from 'lucide-react'
+import { reportsApi } from '@/services/api'
 
 export default function Report({ submissionId }) {
   const [report, setReport] = useState(null)
@@ -32,17 +33,11 @@ export default function Report({ submissionId }) {
   const fetchReport = async () => {
     try {
       setIsLoading(true)
-      const response = await fetch(`/api/reports/${submissionId}`)
-      const data = await response.json()
-
-      if (response.ok) {
-        setReport(data)
-        setError(null)
-      } else {
-        setError(data.error || 'Failed to fetch report')
-      }
+      const data = await reportsApi.getReport(submissionId)
+      setReport(data)
+      setError(null)
     } catch (err) {
-      setError('Network error. Please try again.')
+      setError(err.message || 'Failed to fetch report')
     } finally {
       setIsLoading(false)
     }
@@ -89,7 +84,7 @@ export default function Report({ submissionId }) {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <Link 
           href="/dashboard"
-          className="inline-flex items-center text-blue-600 hover:text-blue-700 mb-8"
+          className="inline-flex items-center text-purple-600 hover:text-purple-700 mb-8"
         >
           <ArrowLeft className="h-4 w-4 mr-2" />
           Back to Dashboard
@@ -97,7 +92,7 @@ export default function Report({ submissionId }) {
         
         <div className="flex items-center justify-center min-h-96">
           <div className="text-center">
-            <Loader2 className="h-12 w-12 text-blue-600 animate-spin mx-auto mb-4" />
+            <Loader2 className="h-12 w-12 text-purple-600 animate-spin mx-auto mb-4" />
             <h2 className="text-xl font-semibold text-gray-900 mb-2">Loading your SEO report...</h2>
             <p className="text-gray-600">Please wait while we retrieve your analysis results.</p>
           </div>
@@ -111,7 +106,7 @@ export default function Report({ submissionId }) {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <Link 
           href="/dashboard"
-          className="inline-flex items-center text-blue-600 hover:text-blue-700 mb-8"
+          className="inline-flex items-center text-purple-600 hover:text-purple-700 mb-8"
         >
           <ArrowLeft className="h-4 w-4 mr-2" />
           Back to Dashboard
@@ -124,7 +119,7 @@ export default function Report({ submissionId }) {
             <p className="text-gray-600 mb-4">{error}</p>
             <button
               onClick={fetchReport}
-              className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+              className="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition-colors"
             >
               Try Again
             </button>
@@ -139,7 +134,7 @@ export default function Report({ submissionId }) {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <Link 
           href="/dashboard"
-          className="inline-flex items-center text-blue-600 hover:text-blue-700 mb-8"
+          className="inline-flex items-center text-purple-600 hover:text-purple-700 mb-8"
         >
           <ArrowLeft className="h-4 w-4 mr-2" />
           Back to Dashboard
@@ -160,7 +155,7 @@ export default function Report({ submissionId }) {
       {/* Back Button */}
       <Link 
         href="/dashboard"
-        className="inline-flex items-center text-blue-600 hover:text-blue-700 mb-8 transition-colors"
+        className="inline-flex items-center text-purple-600 hover:text-purple-700 mb-8 transition-colors"
       >
         <ArrowLeft className="h-4 w-4 mr-2" />
         Back to Dashboard
@@ -168,9 +163,9 @@ export default function Report({ submissionId }) {
 
       {/* Report Header */}
       <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden mb-8">
-        <div className="bg-gradient-to-r from-blue-600 to-purple-600 px-6 py-8 text-white">
+        <div className="bg-gradient-to-r from-purple-600 to-purple-800 px-6 py-8 text-white">
           <h1 className="text-3xl font-bold mb-2">SEO Analysis Report</h1>
-          <div className="flex items-center space-x-4 text-blue-100">
+          <div className="flex items-center space-x-4 text-purple-100">
             <span className="truncate">{report.url}</span>
             <a
               href={report.url}
@@ -181,7 +176,7 @@ export default function Report({ submissionId }) {
               <ExternalLink className="h-4 w-4 ml-1" />
             </a>
           </div>
-          <div className="flex items-center mt-4 text-blue-100">
+          <div className="flex items-center mt-4 text-purple-100">
             <Calendar className="h-4 w-4 mr-2" />
             <span>Analyzed on {formatDate(report.crawled_at)}</span>
           </div>
@@ -194,7 +189,7 @@ export default function Report({ submissionId }) {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
             <div className="flex items-center mb-2">
-              <FileText className="h-5 w-5 text-blue-600 mr-2" />
+              <FileText className="h-5 w-5 text-purple-600 mr-2" />
               <span className="text-sm font-medium text-gray-600">Page Title</span>
             </div>
             <p className="text-lg font-semibold text-gray-900">
@@ -273,7 +268,7 @@ export default function Report({ submissionId }) {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
           <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
             <div className="flex items-center mb-2">
-              <Hash className="h-5 w-5 text-blue-600 mr-2" />
+              <Hash className="h-5 w-5 text-purple-600 mr-2" />
               <span className="text-sm font-medium text-gray-600">H1 Tags</span>
             </div>
             <p className="text-2xl font-bold text-gray-900">
@@ -384,14 +379,14 @@ export default function Report({ submissionId }) {
       )}
 
       {/* Call to Action */}
-      <div className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl p-8 text-white text-center">
+      <div className="bg-gradient-to-r from-purple-600 to-purple-800 rounded-xl p-8 text-white text-center">
         <h3 className="text-2xl font-bold mb-4">Ready to improve your SEO?</h3>
-        <p className="text-blue-100 mb-6">
+        <p className="text-purple-100 mb-6">
           Use these recommendations to boost your search engine rankings and drive more traffic to your website.
         </p>
         <Link
           href="/"
-          className="inline-flex items-center px-6 py-3 bg-white text-blue-600 font-semibold rounded-lg hover:bg-gray-100 transition-colors"
+          className="inline-flex items-center px-6 py-3 bg-white text-purple-600 font-semibold rounded-lg hover:bg-gray-100 transition-colors"
         >
           Analyze Another Website
         </Link>
