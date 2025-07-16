@@ -30,6 +30,18 @@ class CrawlerService:
     async def crawl_url(self, submission_id: str, url: str):
         """Main crawling function that runs in background"""
         try:
+            # Get the URL submission to extract user_id
+            submission = await self.db.url_submissions.find_one(
+                {"_id": ObjectId(submission_id)}
+            )
+            
+            if not submission:
+                raise Exception(f"URL submission {submission_id} not found")
+            
+            user_id = submission.get("user_id")
+            if not user_id:
+                raise Exception(f"No user_id found for submission {submission_id}")
+            
             # Update status to crawling
             await self.db.url_submissions.update_one(
                 {"_id": ObjectId(submission_id)},
@@ -39,26 +51,27 @@ class CrawlerService:
             # Perform the crawl
             seo_metrics = await self._crawl_and_analyze(url)
             
-            # Save crawl result
+            # Save crawl result with user_id
             crawl_result = CrawlResult(
                 url_submission_id=submission_id,
+                user_id=user_id,
                 url=url,
                 seo_metrics=seo_metrics
             )
             
             result = await self.db.crawl_results.insert_one(
-                crawl_result.dict(by_alias=True)
+                crawl_result.model_dump(by_alias=True, exclude={"id"})
             )
             
             # Generate ML recommendations
             recommendations = await self.ml_analyzer.generate_recommendations(
-                str(result.inserted_id), seo_metrics
+                str(result.inserted_id), seo_metrics, user_id
             )
             
             # Save recommendations
             if recommendations:
                 await self.db.recommendations.insert_many(
-                    [rec.dict(by_alias=True) for rec in recommendations]
+                    [rec.model_dump(by_alias=True, exclude={"id"}) for rec in recommendations]
                 )
             
             # Update submission status

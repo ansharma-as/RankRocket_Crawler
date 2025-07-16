@@ -5,13 +5,27 @@ import uvicorn
 
 from app.core.config import settings
 from app.core.database import init_db
-from app.routers import crawl, reports, advanced
+from app.routers import crawl, reports, advanced, auth
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    await init_db()
+    # Initialize database with error handling
+    try:
+        await init_db()
+    except Exception as e:
+        print(f"⚠️ Warning: Database initialization failed: {e}")
+        print("📡 Server will start but database features may not work")
+    
     yield
+    
+    # Cleanup on shutdown
+    try:
+        from app.core.database import close_db
+        await close_db()
+        print("🔄 Database connections closed")
+    except Exception as e:
+        print(f"⚠️ Warning during cleanup: {e}")
 
 
 app = FastAPI(
@@ -30,6 +44,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+app.include_router(auth.router, prefix="/auth", tags=["authentication"])
 app.include_router(crawl.router, prefix="/api/v1", tags=["crawl"])
 app.include_router(reports.router, prefix="/api/v1", tags=["reports"])
 app.include_router(advanced.router, prefix="/api/v1/advanced", tags=["advanced"])

@@ -1,6 +1,8 @@
 from fastapi import APIRouter, HTTPException, Depends
 from app.core.database import get_database
 from app.services.ml_analyzer import MLAnalyzer
+from app.core.security import get_current_active_user
+from app.models.schemas import User
 from bson import ObjectId
 from typing import Optional
 
@@ -8,22 +10,26 @@ router = APIRouter()
 
 
 @router.get("/report/{submission_id}")
-async def get_report(submission_id: str, db=Depends(get_database)):
+async def get_report(
+    submission_id: str,
+    current_user: User = Depends(get_current_active_user),
+    db=Depends(get_database)
+):
     try:
         if not ObjectId.is_valid(submission_id):
             raise HTTPException(status_code=400, detail="Invalid submission ID")
         
-        # Get crawl result
+        # Get crawl result for the current user
         crawl_result = await db.crawl_results.find_one(
-            {"url_submission_id": submission_id}
+            {"url_submission_id": submission_id, "user_id": str(current_user.id)}
         )
         
         if not crawl_result:
             raise HTTPException(status_code=404, detail="Crawl result not found")
         
-        # Get recommendations
+        # Get recommendations for the current user
         recommendations = await db.recommendations.find(
-            {"crawl_result_id": str(crawl_result["_id"])}
+            {"crawl_result_id": str(crawl_result["_id"]), "user_id": str(current_user.id)}
         ).to_list(length=None)
         
         # Convert ObjectIds to strings for JSON serialization
@@ -54,13 +60,14 @@ async def get_report(submission_id: str, db=Depends(get_database)):
 async def get_all_reports(
     skip: int = 0,
     limit: int = 10,
+    current_user: User = Depends(get_current_active_user),
     db=Depends(get_database)
 ):
     try:
-        # Get recent crawl results
-        crawl_results = await db.crawl_results.find().sort(
-            "crawled_at", -1
-        ).skip(skip).limit(limit).to_list(length=None)
+        # Get recent crawl results for the current user
+        crawl_results = await db.crawl_results.find(
+            {"user_id": str(current_user.id)}
+        ).sort("crawled_at", -1).skip(skip).limit(limit).to_list(length=None)
         
         # Convert ObjectIds to strings for JSON serialization
         def convert_objectids(obj):
@@ -75,7 +82,7 @@ async def get_all_reports(
         reports = []
         for result in crawl_results:
             recommendations_count = await db.recommendations.count_documents(
-                {"crawl_result_id": str(result["_id"])}
+                {"crawl_result_id": str(result["_id"]), "user_id": str(current_user.id)}
             )
             
             reports.append({

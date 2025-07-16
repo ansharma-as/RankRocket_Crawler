@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field, HttpUrl
+from pydantic import BaseModel, Field, HttpUrl, EmailStr
 from typing import Optional, List, Dict, Any
 from datetime import datetime
 from bson import ObjectId
@@ -18,9 +18,12 @@ class PyObjectId(ObjectId):
     @classmethod
     def validate(cls, v):
         if isinstance(v, ObjectId):
-            return v
-        if isinstance(v, str) and ObjectId.is_valid(v):
-            return ObjectId(v)
+            return str(v)  # Convert ObjectId to string
+        if isinstance(v, str):
+            if ObjectId.is_valid(v):
+                return v  # Return string as-is if valid ObjectId string
+            else:
+                raise ValueError("Invalid ObjectId string")
         raise ValueError("Invalid ObjectId")
 
 
@@ -34,14 +37,17 @@ class CrawlStatus(str, Enum):
 class URLSubmission(BaseModel):
     id: Optional[PyObjectId] = Field(default_factory=PyObjectId, alias="_id")
     url: str
+    user_id: str
     status: CrawlStatus = CrawlStatus.PENDING
     submitted_at: datetime = Field(default_factory=datetime.utcnow)
     completed_at: Optional[datetime] = None
     error_message: Optional[str] = None
     
-    class Config:
-        populate_by_name = True
-        json_encoders = {ObjectId: str}
+    model_config = {
+        "populate_by_name": True,
+        "json_encoders": {ObjectId: str},
+        "arbitrary_types_allowed": True
+    }
 
 
 class SEOMetrics(BaseModel):
@@ -76,14 +82,17 @@ class SEOMetrics(BaseModel):
 class CrawlResult(BaseModel):
     id: Optional[PyObjectId] = Field(default_factory=PyObjectId, alias="_id")
     url_submission_id: str
+    user_id: str
     url: str
     seo_metrics: SEOMetrics
     raw_html: Optional[str] = None
     crawled_at: datetime = Field(default_factory=datetime.utcnow)
     
-    class Config:
-        populate_by_name = True
-        json_encoders = {ObjectId: str}
+    model_config = {
+        "populate_by_name": True,
+        "json_encoders": {ObjectId: str},
+        "arbitrary_types_allowed": True
+    }
 
 
 class RecommendationType(str, Enum):
@@ -98,6 +107,7 @@ class RecommendationType(str, Enum):
 class Recommendation(BaseModel):
     id: Optional[PyObjectId] = Field(default_factory=PyObjectId, alias="_id")
     crawl_result_id: str
+    user_id: str
     type: RecommendationType
     priority: str  # high, medium, low
     title: str
@@ -106,9 +116,11 @@ class Recommendation(BaseModel):
     suggested_value: Optional[str] = None
     impact_score: Optional[float] = None
     
-    class Config:
-        populate_by_name = True
-        json_encoders = {ObjectId: str}
+    model_config = {
+        "populate_by_name": True,
+        "json_encoders": {ObjectId: str},
+        "arbitrary_types_allowed": True
+    }
 
 
 class URLSubmissionCreate(BaseModel):
@@ -120,3 +132,92 @@ class CrawlResponse(BaseModel):
     url: str
     status: CrawlStatus
     message: str
+
+
+# Authentication Models
+class AuthProvider(str, Enum):
+    EMAIL = "email"
+    GOOGLE = "google"
+
+
+class User(BaseModel):
+    id: Optional[PyObjectId] = Field(default_factory=PyObjectId, alias="_id")
+    email: EmailStr
+    hashed_password: Optional[str] = None
+    full_name: str
+    is_active: bool = True
+    is_verified: bool = False
+    auth_provider: AuthProvider = AuthProvider.EMAIL
+    google_id: Optional[str] = None
+    profile_picture: Optional[str] = None
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+    updated_at: datetime = Field(default_factory=datetime.utcnow)
+    
+    model_config = {
+        "populate_by_name": True,
+        "json_encoders": {ObjectId: str},
+        "arbitrary_types_allowed": True
+    }
+
+
+class UserCreate(BaseModel):
+    email: EmailStr
+    password: str
+    full_name: str
+
+
+class UserLogin(BaseModel):
+    email: EmailStr
+    password: str
+
+
+class UserResponse(BaseModel):
+    id: str
+    email: EmailStr
+    full_name: str
+    is_active: bool
+    is_verified: bool
+    auth_provider: AuthProvider
+    profile_picture: Optional[str] = None
+    created_at: datetime
+
+
+class UserUpdate(BaseModel):
+    full_name: Optional[str] = None
+    profile_picture: Optional[str] = None
+
+
+class Token(BaseModel):
+    access_token: str
+    refresh_token: str
+    token_type: str = "bearer"
+    expires_in: int
+
+
+class TokenData(BaseModel):
+    email: Optional[str] = None
+    user_id: Optional[str] = None
+
+
+class RefreshToken(BaseModel):
+    refresh_token: str
+
+
+class PasswordReset(BaseModel):
+    email: EmailStr
+
+
+class PasswordResetConfirm(BaseModel):
+    token: str
+    new_password: str
+
+
+class EmailVerification(BaseModel):
+    token: str
+
+
+class GoogleOAuthData(BaseModel):
+    email: EmailStr
+    name: str
+    picture: Optional[str] = None
+    google_id: str

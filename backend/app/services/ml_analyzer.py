@@ -15,51 +15,53 @@ class MLAnalyzer:
     async def generate_recommendations(
         self, 
         crawl_result_id, 
-        seo_metrics: SEOMetrics
+        seo_metrics: SEOMetrics,
+        user_id: str
     ) -> List[Recommendation]:
         """Generate SEO recommendations based on crawl results"""
         recommendations = []
         
         # Title recommendations
-        title_recs = self._analyze_title(crawl_result_id, seo_metrics.title)
+        title_recs = self._analyze_title(crawl_result_id, seo_metrics.title, user_id)
         recommendations.extend(title_recs)
         
         # Meta description recommendations
         meta_desc_recs = self._analyze_meta_description(
-            crawl_result_id, seo_metrics.meta_description
+            crawl_result_id, seo_metrics.meta_description, user_id
         )
         recommendations.extend(meta_desc_recs)
         
         # Heading structure recommendations
         heading_recs = self._analyze_headings(
-            crawl_result_id, seo_metrics.h1_tags, seo_metrics.h2_tags, seo_metrics.h3_tags
+            crawl_result_id, seo_metrics.h1_tags, seo_metrics.h2_tags, seo_metrics.h3_tags, user_id
         )
         recommendations.extend(heading_recs)
         
         # Link structure recommendations
         link_recs = self._analyze_links(
-            crawl_result_id, seo_metrics.internal_links, seo_metrics.external_links
+            crawl_result_id, seo_metrics.internal_links, seo_metrics.external_links, user_id
         )
         recommendations.extend(link_recs)
         
         # Image recommendations
-        image_recs = self._analyze_images(crawl_result_id, seo_metrics.images)
+        image_recs = self._analyze_images(crawl_result_id, seo_metrics.images, user_id)
         recommendations.extend(image_recs)
         
         # Performance recommendations
         perf_recs = self._analyze_performance(
-            crawl_result_id, seo_metrics.load_time, seo_metrics.page_size
+            crawl_result_id, seo_metrics.load_time, seo_metrics.page_size, user_id
         )
         recommendations.extend(perf_recs)
         
         return recommendations
 
-    def _analyze_title(self, crawl_result_id, title: Optional[str]) -> List[Recommendation]:
+    def _analyze_title(self, crawl_result_id, title: Optional[str], user_id: str) -> List[Recommendation]:
         recommendations = []
         
         if not title:
             recommendations.append(Recommendation(
                 crawl_result_id=crawl_result_id,
+                user_id=user_id,
                 type=RecommendationType.TITLE,
                 priority="high",
                 title="Missing Page Title",
@@ -71,6 +73,7 @@ class MLAnalyzer:
         elif len(title) < self.title_optimal_length[0]:
             recommendations.append(Recommendation(
                 crawl_result_id=crawl_result_id,
+                user_id=user_id,
                 type=RecommendationType.TITLE,
                 priority="medium",
                 title="Title Too Short",
@@ -82,6 +85,7 @@ class MLAnalyzer:
         elif len(title) > self.title_optimal_length[1]:
             recommendations.append(Recommendation(
                 crawl_result_id=crawl_result_id,
+                user_id=user_id,
                 type=RecommendationType.TITLE,
                 priority="medium",
                 title="Title Too Long",
@@ -93,12 +97,13 @@ class MLAnalyzer:
         
         return recommendations
 
-    def _analyze_meta_description(self, crawl_result_id, meta_desc: Optional[str]) -> List[Recommendation]:
+    def _analyze_meta_description(self, crawl_result_id, meta_desc: Optional[str], user_id: str) -> List[Recommendation]:
         recommendations = []
         
         if not meta_desc:
             recommendations.append(Recommendation(
                 crawl_result_id=crawl_result_id,
+                user_id=user_id,
                 type=RecommendationType.META_DESCRIPTION,
                 priority="high",
                 title="Missing Meta Description",
@@ -110,6 +115,7 @@ class MLAnalyzer:
         elif len(meta_desc) < self.meta_desc_optimal_length[0]:
             recommendations.append(Recommendation(
                 crawl_result_id=crawl_result_id,
+                user_id=user_id,
                 type=RecommendationType.META_DESCRIPTION,
                 priority="medium",
                 title="Meta Description Too Short",
@@ -121,6 +127,7 @@ class MLAnalyzer:
         elif len(meta_desc) > self.meta_desc_optimal_length[1]:
             recommendations.append(Recommendation(
                 crawl_result_id=crawl_result_id,
+                user_id=user_id,
                 type=RecommendationType.META_DESCRIPTION,
                 priority="medium",
                 title="Meta Description Too Long",
@@ -132,12 +139,13 @@ class MLAnalyzer:
         
         return recommendations
 
-    def _analyze_headings(self, crawl_result_id, h1_tags: List[str], h2_tags: List[str], h3_tags: List[str]) -> List[Recommendation]:
+    def _analyze_headings(self, crawl_result_id, h1_tags: List[str], h2_tags: List[str], h3_tags: List[str], user_id: str) -> List[Recommendation]:
         recommendations = []
         
         if len(h1_tags) == 0:
             recommendations.append(Recommendation(
                 crawl_result_id=crawl_result_id,
+                user_id=user_id,
                 type=RecommendationType.HEADINGS,
                 priority="high",
                 title="Missing H1 Tag",
@@ -149,6 +157,7 @@ class MLAnalyzer:
         elif len(h1_tags) > self.h1_optimal_count:
             recommendations.append(Recommendation(
                 crawl_result_id=crawl_result_id,
+                user_id=user_id,
                 type=RecommendationType.HEADINGS,
                 priority="medium",
                 title="Multiple H1 Tags",
@@ -161,6 +170,7 @@ class MLAnalyzer:
         if len(h2_tags) == 0:
             recommendations.append(Recommendation(
                 crawl_result_id=crawl_result_id,
+                user_id=user_id,
                 type=RecommendationType.HEADINGS,
                 priority="low",
                 title="No H2 Tags",
@@ -172,7 +182,7 @@ class MLAnalyzer:
         
         return recommendations
 
-    def _analyze_links(self, crawl_result_id, internal_links: List[str], external_links: List[str]) -> List[Recommendation]:
+    def _analyze_links(self, crawl_result_id, internal_links: List[str], external_links: List[str], user_id: str) -> List[Recommendation]:
         recommendations = []
         
         total_links = len(internal_links) + len(external_links)
@@ -180,6 +190,7 @@ class MLAnalyzer:
         if total_links == 0:
             recommendations.append(Recommendation(
                 crawl_result_id=crawl_result_id,
+                user_id=user_id,
                 type=RecommendationType.LINKS,
                 priority="medium",
                 title="No Links Found",
@@ -191,6 +202,7 @@ class MLAnalyzer:
         elif len(internal_links) == 0:
             recommendations.append(Recommendation(
                 crawl_result_id=crawl_result_id,
+                user_id=user_id,
                 type=RecommendationType.LINKS,
                 priority="medium",
                 title="No Internal Links",
@@ -204,6 +216,7 @@ class MLAnalyzer:
             if internal_ratio < self.internal_external_ratio:
                 recommendations.append(Recommendation(
                     crawl_result_id=crawl_result_id,
+                user_id=user_id,
                     type=RecommendationType.LINKS,
                     priority="low",
                     title="Low Internal Link Ratio",
@@ -215,7 +228,7 @@ class MLAnalyzer:
         
         return recommendations
 
-    def _analyze_images(self, crawl_result_id, images: List[dict]) -> List[Recommendation]:
+    def _analyze_images(self, crawl_result_id, images: List[dict], user_id: str) -> List[Recommendation]:
         recommendations = []
         
         images_without_alt = [img for img in images if not img.get('alt')]
@@ -223,6 +236,7 @@ class MLAnalyzer:
         if images_without_alt:
             recommendations.append(Recommendation(
                 crawl_result_id=crawl_result_id,
+                user_id=user_id,
                 type=RecommendationType.IMAGES,
                 priority="medium",
                 title="Images Missing Alt Text",
@@ -234,12 +248,13 @@ class MLAnalyzer:
         
         return recommendations
 
-    def _analyze_performance(self, crawl_result_id, load_time: Optional[float], page_size: Optional[int]) -> List[Recommendation]:
+    def _analyze_performance(self, crawl_result_id, load_time: Optional[float], page_size: Optional[int], user_id: str) -> List[Recommendation]:
         recommendations = []
         
         if load_time and load_time > 3.0:
             recommendations.append(Recommendation(
                 crawl_result_id=crawl_result_id,
+                user_id=user_id,
                 type=RecommendationType.PERFORMANCE,
                 priority="high",
                 title="Slow Page Load Time",
@@ -252,6 +267,7 @@ class MLAnalyzer:
         if page_size and page_size > 1000000:  # 1MB
             recommendations.append(Recommendation(
                 crawl_result_id=crawl_result_id,
+                user_id=user_id,
                 type=RecommendationType.PERFORMANCE,
                 priority="medium",
                 title="Large Page Size",
