@@ -1,7 +1,427 @@
+// 'use client'
+
+// import { useState, useEffect } from 'react'
+// import Link from 'next/link'
+// import { 
+//   BarChart3, 
+//   ExternalLink, 
+//   Calendar, 
+//   TrendingUp, 
+//   AlertCircle,
+//   Loader2,
+//   FileText,
+//   Plus,
+//   Eye,
+//   Zap,
+//   Target,
+//   Shield,
+//   Clock,
+//   ArrowUp,
+//   Star,
+//   ChevronRight
+// } from 'lucide-react'
+// import { reportsApi, utils } from '@/services/api'
+
+// export default function Dashboard() {
+//   const [reports, setReports] = useState([])
+//   const [isLoading, setIsLoading] = useState(true)
+//   const [error, setError] = useState(null)
+//   const [page, setPage] = useState(0)
+//   const limit = 10
+
+//   useEffect(() => {
+//     fetchReports()
+//   }, [page])
+
+//   const fetchReports = async () => {
+//     try {
+//       setIsLoading(true)
+//       const data = await reportsApi.getAllReports(page * limit, limit)
+//       setReports(data.reports || [])
+//       setError(null)
+//     } catch (err) {
+//       setError(err.message || 'Failed to fetch reports')
+//     } finally {
+//       setIsLoading(false)
+//     }
+//   }
+
+//   const formatDate = (dateString) => {
+//     return utils.formatDate(dateString)
+//   }
+
+//   const getSeoScoreColor = (score) => {
+//     if (score >= 90) return 'text-green-400'
+//     if (score >= 70) return 'text-yellow-400'
+//     if (score >= 50) return 'text-orange-400'
+//     return 'text-red-400'
+//   }
+
+//   const getSeoScoreGradient = (score) => {
+//     if (score >= 90) return 'from-green-500 to-emerald-500'
+//     if (score >= 70) return 'from-yellow-500 to-amber-500'
+//     if (score >= 50) return 'from-orange-500 to-red-500'
+//     return 'from-red-500 to-rose-500'
+//   }
+
+//   if (isLoading) {
+//     return (
+//       <div className="min-h-screen pt-16">
+//         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+//           <div className="flex items-center justify-center min-h-96">
+//             <div className="text-center">
+//               <div className="loading-spinner h-12 w-12 rounded-full border-4 border-purple-500/20 border-t-purple-500 mx-auto mb-4"></div>
+//               <h2 className="text-xl font-semibold text-white mb-2">Loading your dashboard...</h2>
+//               <p className="text-gray-400">Please wait while we retrieve your analytics.</p>
+//             </div>
+//           </div>
+//         </div>
+//       </div>
+//     )
+//   }
+
+//   if (error) {
+//     return (
+//       <div className="min-h-screen pt-16">
+//         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+//           <div className="flex items-center justify-center min-h-96">
+//             <div className="text-center">
+//               <AlertCircle className="h-12 w-12 text-red-400 mx-auto mb-4" />
+//               <h2 className="text-xl font-semibold text-white mb-2">Error Loading Dashboard</h2>
+//               <p className="text-gray-400 mb-4">{error}</p>
+//               <button
+//                 onClick={fetchReports}
+//                 className="btn-primary px-6 py-3 rounded-lg hover-lift"
+//               >
+//                 Try Again
+//               </button>
+//             </div>
+//           </div>
+//         </div>
+//       </div>
+//     )
+//   }
+
+//   if (reports.length === 0) {
+//     return (
+//       <div className="min-h-screen pt-16">
+//         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+//           {/* Header */}
+//           <div className="mb-12">
+//             <h1 className="text-4xl font-bold text-white mb-4">
+//               Welcome to <span className="gradient-text">RankRocket</span>
+//             </h1>
+//             <p className="text-xl text-gray-400">Start your SEO journey with powerful analytics and insights</p>
+//           </div>
+
+//           {/* Empty State */}
+//           <div className="text-center">
+//             <div className="card max-w-2xl mx-auto">
+//               <div className="flex justify-center mb-6">
+//                 <div className="p-6 rounded-full bg-gradient-to-br from-purple-500/20 to-purple-600/20">
+//                   <Zap className="h-16 w-16 text-purple-400" />
+//                 </div>
+//               </div>
+//               <h3 className="text-2xl font-bold text-white mb-4">Ready to Rocket Your SEO?</h3>
+//               <p className="text-gray-400 mb-8 text-lg leading-relaxed">
+//                 Start by analyzing your first website to unlock powerful insights, 
+//                 track performance, and get actionable recommendations to boost your rankings.
+//               </p>
+//               <Link
+//                 href="/"
+//                 className="btn-primary group px-8 py-4 text-lg font-semibold rounded-xl hover-lift inline-flex items-center"
+//               >
+//                 <Plus className="h-5 w-5 mr-2 group-hover:rotate-90 transition-transform" />
+//                 Analyze Your First Website
+//                 <ChevronRight className="h-5 w-5 ml-2 group-hover:translate-x-1 transition-transform" />
+//               </Link>
+//             </div>
+
+//             {/* Features Preview */}
+//             <div className="mt-16 grid grid-cols-1 md:grid-cols-3 gap-8">
+//               {[
+//                 {
+//                   icon: <BarChart3 className="h-8 w-8 text-purple-400" />,
+//                   title: "Advanced Analytics",
+//                   description: "Get detailed insights into your website's SEO performance"
+//                 },
+//                 {
+//                   icon: <Target className="h-8 w-8 text-green-400" />,
+//                   title: "Smart Recommendations",
+//                   description: "Receive AI-powered suggestions to improve your rankings"
+//                 },
+//                 {
+//                   icon: <TrendingUp className="h-8 w-8 text-purple-400" />,
+//                   title: "Real-time Monitoring",
+//                   description: "Track your progress with live performance updates"
+//                 }
+//               ].map((feature, index) => (
+//                 <div key={index} className="card hover-lift group">
+//                   <div className="flex justify-center mb-4">
+//                     <div className="p-3 rounded-xl bg-white/5 group-hover:bg-white/10 transition-colors">
+//                       {feature.icon}
+//                     </div>
+//                   </div>
+//                   <h4 className="text-lg font-semibold text-white mb-2">{feature.title}</h4>
+//                   <p className="text-gray-400">{feature.description}</p>
+//                 </div>
+//               ))}
+//             </div>
+//           </div>
+//         </div>
+//       </div>
+//     )
+//   }
+
+//   const avgSeoScore = reports.length > 0 
+//     ? Math.round(reports.reduce((sum, r) => sum + (r.seo_score || 0), 0) / reports.length)
+//     : 0
+
+//   const totalRecommendations = reports.reduce((sum, r) => sum + (r.recommendations_count || 0), 0)
+
+//   return (
+//     <div className="min-h-screen pt-16">
+//       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+//         {/* Header */}
+//         <div className="mb-8">
+//           <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between">
+//             <div className="mb-6 lg:mb-0">
+//               <h1 className="text-4xl font-bold text-white mb-2">
+//                 SEO Dashboard
+//               </h1>
+//               <p className="text-xl text-gray-400">
+//                 Monitor and optimize your website performance
+//               </p>
+//             </div>
+//             <Link
+//               href="/"
+//               className="btn-primary group px-6 py-3 rounded-lg hover-lift inline-flex items-center w-fit"
+//             >
+//               <Plus className="h-4 w-4 mr-2 group-hover:rotate-90 transition-transform" />
+//               New Analysis
+//             </Link>
+//           </div>
+//         </div>
+
+//         {/* Stats Overview */}
+//         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+//           <div className="card hover-lift group">
+//             <div className="flex items-center justify-between mb-4">
+//               <div className="p-3 rounded-xl bg-purple-500/20 text-purple-400 group-hover:scale-110 transition-transform">
+//                 <FileText className="h-6 w-6" />
+//               </div>
+//               <div className="flex items-center text-green-400 text-sm">
+//                 <ArrowUp className="h-4 w-4 mr-1" />
+//                 <span>+12%</span>
+//               </div>
+//             </div>
+//             <div className="text-3xl font-bold text-white mb-1">{reports.length}</div>
+//             <div className="text-gray-400 text-sm">Total Reports</div>
+//           </div>
+
+//           <div className="card hover-lift group">
+//             <div className="flex items-center justify-between mb-4">
+//               <div className="p-3 rounded-xl bg-green-500/20 text-green-400 group-hover:scale-110 transition-transform">
+//                 <Target className="h-6 w-6" />
+//               </div>
+//               <div className="flex items-center text-green-400 text-sm">
+//                 <ArrowUp className="h-4 w-4 mr-1" />
+//                 <span>+8%</span>
+//               </div>
+//             </div>
+//             <div className={`text-3xl font-bold mb-1 ${getSeoScoreColor(avgSeoScore)}`}>
+//               {avgSeoScore}
+//             </div>
+//             <div className="text-gray-400 text-sm">Avg SEO Score</div>
+//           </div>
+
+//           <div className="card hover-lift group">
+//             <div className="flex items-center justify-between mb-4">
+//               <div className="p-3 rounded-xl bg-purple-500/20 text-purple-400 group-hover:scale-110 transition-transform">
+//                 <TrendingUp className="h-6 w-6" />
+//               </div>
+//               <div className="flex items-center text-green-400 text-sm">
+//                 <ArrowUp className="h-4 w-4 mr-1" />
+//                 <span>+15%</span>
+//               </div>
+//             </div>
+//             <div className="text-3xl font-bold text-white mb-1">{totalRecommendations}</div>
+//             <div className="text-gray-400 text-sm">Total Recommendations</div>
+//           </div>
+
+//           <div className="card hover-lift group">
+//             <div className="flex items-center justify-between mb-4">
+//               <div className="p-3 rounded-xl bg-orange-500/20 text-orange-400 group-hover:scale-110 transition-transform">
+//                 <Clock className="h-6 w-6" />
+//               </div>
+//               <div className="flex items-center text-green-400 text-sm">
+//                 <ArrowUp className="h-4 w-4 mr-1" />
+//                 <span>+5%</span>
+//               </div>
+//             </div>
+//             <div className="text-3xl font-bold text-white mb-1">
+//               {reports.length > 0 ? formatDate(reports[0].crawled_at).split(',')[0] : 'N/A'}
+//             </div>
+//             <div className="text-gray-400 text-sm">Latest Analysis</div>
+//           </div>
+//         </div>
+
+//         {/* Reports Grid */}
+//         <div className="mb-8">
+//           <div className="flex items-center justify-between mb-6">
+//             <h2 className="text-2xl font-bold text-white">Recent Reports</h2>
+//             <div className="text-sm text-gray-400">
+//               {reports.length} report{reports.length !== 1 ? 's' : ''} found
+//             </div>
+//           </div>
+
+//           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+//             {reports.map((report, index) => (
+//               <div
+//                 key={report.submission_id}
+//                 className="card hover-lift group transition-all duration-300"
+//                 style={{
+//                   animationDelay: `${index * 100}ms`,
+//                   transform: 'translateY(20px)',
+//                   opacity: 0,
+//                   animation: 'slideUp 0.6s ease forwards'
+//                 }}
+//               >
+//                 {/* Header */}
+//                 <div className="flex items-start justify-between mb-4">
+//                   <div className="flex-1 min-w-0">
+//                     <h3 className="text-lg font-semibold text-white truncate mb-1 group-hover:text-purple-300 transition-colors">
+//                       {report.url}
+//                     </h3>
+//                     <div className="flex items-center text-sm text-gray-400">
+//                       <Calendar className="h-4 w-4 mr-1" />
+//                       <span>{formatDate(report.crawled_at)}</span>
+//                     </div>
+//                   </div>
+//                   <div className="ml-4 flex-shrink-0">
+//                     <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-500/20 text-green-400 border border-green-500/30">
+//                       <div className="w-2 h-2 bg-green-400 rounded-full mr-2 animate-pulse"></div>
+//                       Completed
+//                     </span>
+//                   </div>
+//                 </div>
+
+//                 {/* Score Circle */}
+//                 <div className="flex items-center justify-center mb-6">
+//                   <div className="relative w-24 h-24">
+//                     <svg className="w-24 h-24 transform -rotate-90" viewBox="0 0 100 100">
+//                       <circle
+//                         cx="50"
+//                         cy="50"
+//                         r="40"
+//                         stroke="rgba(255,255,255,0.1)"
+//                         strokeWidth="8"
+//                         fill="transparent"
+//                       />
+//                       <circle
+//                         cx="50"
+//                         cy="50"
+//                         r="40"
+//                         stroke="url(#gradient)"
+//                         strokeWidth="8"
+//                         fill="transparent"
+//                         strokeDasharray={`${(report.seo_score || 0) * 2.51} 251.2`}
+//                         strokeLinecap="round"
+//                         className="transition-all duration-1000 ease-out"
+//                       />
+//                       <defs>
+//                         <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+//                           <stop offset="0%" className={`stop-color-purple-400`} />
+//                           <stop offset="100%" className={`stop-color-purple-600`} />
+//                         </linearGradient>
+//                       </defs>
+//                     </svg>
+//                     <div className="absolute inset-0 flex items-center justify-center">
+//                       <div className="text-center">
+//                         <div className={`text-2xl font-bold ${getSeoScoreColor(report.seo_score || 0)}`}>
+//                           {report.seo_score || 0}
+//                         </div>
+//                         <div className="text-xs text-gray-400">Score</div>
+//                       </div>
+//                     </div>
+//                   </div>
+//                 </div>
+
+//                 {/* Stats */}
+//                 <div className="grid grid-cols-2 gap-4 mb-6">
+//                   <div className="text-center p-3 rounded-lg bg-white/5 group-hover:bg-white/10 transition-colors">
+//                     <div className="text-2xl font-bold text-white">{report.recommendations_count || 0}</div>
+//                     <div className="text-sm text-gray-400">Issues Found</div>
+//                   </div>
+//                   <div className="text-center p-3 rounded-lg bg-white/5 group-hover:bg-white/10 transition-colors">
+//                     <div className="flex items-center justify-center mb-1">
+//                       <Star className="h-4 w-4 text-yellow-400 mr-1" />
+//                       <span className="text-2xl font-bold text-white">4.2</span>
+//                     </div>
+//                     <div className="text-sm text-gray-400">Performance</div>
+//                   </div>
+//                 </div>
+
+//                 {/* Actions */}
+//                 <div className="flex items-center justify-between">
+//                   <Link
+//                     href={`/report/${report.submission_id}`}
+//                     className="flex items-center px-4 py-2 bg-purple-500/20 text-purple-400 text-sm font-medium rounded-lg hover:bg-purple-500/30 transition-all group/button"
+//                   >
+//                     <Eye className="h-4 w-4 mr-2 group-hover/button:scale-110 transition-transform" />
+//                     View Report
+//                   </Link>
+                  
+//                   <a
+//                     href={report.url}
+//                     target="_blank"
+//                     rel="noopener noreferrer"
+//                     className="flex items-center px-3 py-2 text-gray-400 text-sm hover:text-white transition-colors group/link"
+//                   >
+//                     <ExternalLink className="h-4 w-4 mr-1 group-hover/link:scale-110 transition-transform" />
+//                     Visit Site
+//                   </a>
+//                 </div>
+//               </div>
+//             ))}
+//           </div>
+//         </div>
+
+//         {/* Load More */}
+//         {reports.length >= limit && (
+//           <div className="text-center">
+//             <button
+//               onClick={() => setPage(p => p + 1)}
+//               className="glass px-6 py-3 text-white rounded-lg hover:bg-white/10 transition-all hover-lift"
+//             >
+//               Load More Reports
+//             </button>
+//           </div>
+//         )}
+//       </div>
+//     </div>
+//   )
+// }
+
+// /* Add this to your globals.css */
+// const additionalStyles = `
+// @keyframes slideUp {
+//   to {
+//     transform: translateY(0);
+//     opacity: 1;
+//   }
+// }
+// `
+
+
+
+
+
 'use client'
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
+import { motion, AnimatePresence } from 'framer-motion'
 import { 
   BarChart3, 
   ExternalLink, 
@@ -18,9 +438,49 @@ import {
   Clock,
   ArrowUp,
   Star,
-  ChevronRight
+  ChevronRight,
+  Activity,
+  Globe,
+  ScanLine,
+  Brain,
+  RefreshCw
 } from 'lucide-react'
 import { reportsApi, utils } from '@/services/api'
+
+const fadeInUp = {
+  hidden: { opacity: 0, y: 30 },
+  visible: { 
+    opacity: 1, 
+    y: 0,
+    transition: { 
+      duration: 0.6, 
+      ease: [0.25, 0.25, 0, 1]
+    }
+  }
+}
+
+const staggerContainer = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.1,
+      delayChildren: 0.2
+    }
+  }
+}
+
+const scaleIn = {
+  hidden: { opacity: 0, scale: 0.9 },
+  visible: { 
+    opacity: 1, 
+    scale: 1,
+    transition: { 
+      duration: 0.5,
+      ease: [0.25, 0.25, 0, 1]
+    }
+  }
+}
 
 export default function Dashboard() {
   const [reports, setReports] = useState([])
@@ -51,29 +511,47 @@ export default function Dashboard() {
   }
 
   const getSeoScoreColor = (score) => {
-    if (score >= 90) return 'text-green-400'
+    if (score >= 90) return 'text-[#00bf63]'
     if (score >= 70) return 'text-yellow-400'
     if (score >= 50) return 'text-orange-400'
     return 'text-red-400'
   }
 
-  const getSeoScoreGradient = (score) => {
-    if (score >= 90) return 'from-green-500 to-emerald-500'
-    if (score >= 70) return 'from-yellow-500 to-amber-500'
-    if (score >= 50) return 'from-orange-500 to-red-500'
-    return 'from-red-500 to-rose-500'
-  }
-
   if (isLoading) {
     return (
-      <div className="min-h-screen pt-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <div className="flex items-center justify-center min-h-96">
-            <div className="text-center">
-              <div className="loading-spinner h-12 w-12 rounded-full border-4 border-purple-500/20 border-t-purple-500 mx-auto mb-4"></div>
-              <h2 className="text-xl font-semibold text-white mb-2">Loading your dashboard...</h2>
-              <p className="text-gray-400">Please wait while we retrieve your analytics.</p>
-            </div>
+      <div className="min-h-screen relative overflow-hidden">
+        {/* Video Background */}
+        <div className="fixed inset-0 -z-20">
+          <video
+            autoPlay
+            muted
+            loop
+            playsInline
+            className="absolute inset-0 w-full h-full object-cover"
+          >
+            <source src="" type="video/mp4" />
+          </video>
+          <div className="absolute inset-0 bg-neutral-900/90"></div>
+        </div>
+
+        <div className="pt-20 px-4 sm:px-6 lg:px-8">
+          <div className="max-w-7xl mx-auto">
+            <motion.div 
+              className="flex items-center justify-center min-h-96"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.6 }}
+            >
+              <div className="text-center p-8 rounded-2xl bg-neutral-800/40 backdrop-blur-xl border border-neutral-700/50">
+                <motion.div
+                  animate={{ rotate: 360 }}
+                  transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+                  className="h-12 w-12 rounded-full border-4 border-[#00bf63]/20 border-t-[#00bf63] mx-auto mb-4"
+                />
+                <h2 className="text-xl font-semibold text-white mb-2">Loading Dashboard...</h2>
+                <p className="text-gray-400">Analyzing your data and insights</p>
+              </div>
+            </motion.div>
           </div>
         </div>
       </div>
@@ -82,20 +560,46 @@ export default function Dashboard() {
 
   if (error) {
     return (
-      <div className="min-h-screen pt-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <div className="flex items-center justify-center min-h-96">
-            <div className="text-center">
-              <AlertCircle className="h-12 w-12 text-red-400 mx-auto mb-4" />
-              <h2 className="text-xl font-semibold text-white mb-2">Error Loading Dashboard</h2>
-              <p className="text-gray-400 mb-4">{error}</p>
-              <button
-                onClick={fetchReports}
-                className="btn-primary px-6 py-3 rounded-lg hover-lift"
-              >
-                Try Again
-              </button>
-            </div>
+      <div className="min-h-screen relative overflow-hidden">
+        {/* Video Background */}
+        <div className="fixed inset-0 -z-20">
+          <video
+            autoPlay
+            muted
+            loop
+            playsInline
+            className="absolute inset-0 w-full h-full object-cover"
+          >
+            <source src="" type="video/mp4" />
+          </video>
+          <div className="absolute inset-0 bg-neutral-900/90"></div>
+        </div>
+
+        <div className="pt-20 px-4 sm:px-6 lg:px-8">
+          <div className="max-w-7xl mx-auto">
+            <motion.div 
+              className="flex items-center justify-center min-h-96"
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.6 }}
+            >
+              <div className="text-center p-8 rounded-2xl bg-neutral-800/40 backdrop-blur-xl border border-red-500/20 max-w-md">
+                <div className="p-4 rounded-full bg-red-500/20 border border-red-500/30 w-fit mx-auto mb-6">
+                  <AlertCircle className="h-8 w-8 text-red-400" />
+                </div>
+                <h2 className="text-xl font-semibold text-white mb-2">Dashboard Error</h2>
+                <p className="text-gray-400 mb-6">{error}</p>
+                <motion.button
+                  onClick={fetchReports}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="px-6 py-3 bg-gradient-to-r from-[#00bf63] to-emerald-500 text-white font-semibold rounded-lg hover:shadow-lg hover:shadow-[#00bf63]/25 transition-all duration-300 flex items-center mx-auto"
+                >
+                  <RefreshCw className="h-4 w-4 mr-2" />
+                  Try Again
+                </motion.button>
+              </div>
+            </motion.div>
           </div>
         </div>
       </div>
@@ -104,69 +608,127 @@ export default function Dashboard() {
 
   if (reports.length === 0) {
     return (
-      <div className="min-h-screen pt-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          {/* Header */}
-          <div className="mb-12">
-            <h1 className="text-4xl font-bold text-white mb-4">
-              Welcome to <span className="gradient-text">RankRocket</span>
-            </h1>
-            <p className="text-xl text-gray-400">Start your SEO journey with powerful analytics and insights</p>
-          </div>
+      <div className="min-h-screen relative overflow-hidden">
+        {/* Video Background */}
+        <div className="fixed inset-0 -z-20">
+          <video
+            autoPlay
+            muted
+            loop
+            playsInline
+            className="absolute inset-0 w-full h-full object-cover"
+          >
+            <source src="" type="video/mp4" />
+          </video>
+          <div className="absolute inset-0 bg-neutral-900/90"></div>
+        </div>
 
-          {/* Empty State */}
-          <div className="text-center">
-            <div className="card max-w-2xl mx-auto">
-              <div className="flex justify-center mb-6">
-                <div className="p-6 rounded-full bg-gradient-to-br from-purple-500/20 to-purple-600/20">
-                  <Zap className="h-16 w-16 text-purple-400" />
-                </div>
-              </div>
-              <h3 className="text-2xl font-bold text-white mb-4">Ready to Rocket Your SEO?</h3>
-              <p className="text-gray-400 mb-8 text-lg leading-relaxed">
-                Start by analyzing your first website to unlock powerful insights, 
-                track performance, and get actionable recommendations to boost your rankings.
-              </p>
-              <Link
-                href="/"
-                className="btn-primary group px-8 py-4 text-lg font-semibold rounded-xl hover-lift inline-flex items-center"
-              >
-                <Plus className="h-5 w-5 mr-2 group-hover:rotate-90 transition-transform" />
-                Analyze Your First Website
-                <ChevronRight className="h-5 w-5 ml-2 group-hover:translate-x-1 transition-transform" />
-              </Link>
-            </div>
+        {/* Animated Background Elements */}
+        <div className="fixed inset-0 -z-10 overflow-hidden pointer-events-none">
+          <motion.div
+            animate={{ 
+              x: [0, 100, 0],
+              y: [0, -50, 0],
+              scale: [1, 1.1, 1]
+            }}
+            transition={{
+              duration: 20,
+              repeat: Infinity,
+              repeatType: "reverse"
+            }}
+            className="absolute top-1/4 right-1/4 w-96 h-96 bg-[#00bf63]/10 rounded-full blur-3xl"
+          />
+        </div>
 
-            {/* Features Preview */}
-            <div className="mt-16 grid grid-cols-1 md:grid-cols-3 gap-8">
-              {[
-                {
-                  icon: <BarChart3 className="h-8 w-8 text-purple-400" />,
-                  title: "Advanced Analytics",
-                  description: "Get detailed insights into your website's SEO performance"
-                },
-                {
-                  icon: <Target className="h-8 w-8 text-green-400" />,
-                  title: "Smart Recommendations",
-                  description: "Receive AI-powered suggestions to improve your rankings"
-                },
-                {
-                  icon: <TrendingUp className="h-8 w-8 text-purple-400" />,
-                  title: "Real-time Monitoring",
-                  description: "Track your progress with live performance updates"
-                }
-              ].map((feature, index) => (
-                <div key={index} className="card hover-lift group">
-                  <div className="flex justify-center mb-4">
-                    <div className="p-3 rounded-xl bg-white/5 group-hover:bg-white/10 transition-colors">
-                      {feature.icon}
-                    </div>
+        <div className="pt-20 px-4 sm:px-6 lg:px-8">
+          <div className="max-w-7xl mx-auto">
+            <motion.div
+              initial="hidden"
+              animate="visible"
+              variants={staggerContainer}
+            >
+              {/* Header */}
+              <motion.div variants={fadeInUp} className="mb-12 text-center">
+                <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">
+                  Welcome to <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#00bf63] to-emerald-400">CrawlAI</span>
+                </h1>
+                <p className="text-xl text-gray-300 max-w-2xl mx-auto">
+                  Start your AI-powered website analysis journey with comprehensive insights and optimization recommendations
+                </p>
+              </motion.div>
+
+              {/* Empty State */}
+              <motion.div variants={fadeInUp} className="text-center">
+                <div className="max-w-2xl mx-auto p-8 rounded-2xl bg-neutral-800/40 backdrop-blur-xl border border-neutral-700/50 shadow-2xl">
+                  <div className="flex justify-center mb-6">
+                    <motion.div 
+                      className="p-6 rounded-2xl bg-gradient-to-br from-[#00bf63]/20 to-emerald-500/20 border border-[#00bf63]/30"
+                      whileHover={{ scale: 1.05, rotate: 5 }}
+                      transition={{ duration: 0.3 }}
+                    >
+                      <Brain className="h-16 w-16 text-[#00bf63]" />
+                    </motion.div>
                   </div>
-                  <h4 className="text-lg font-semibold text-white mb-2">{feature.title}</h4>
-                  <p className="text-gray-400">{feature.description}</p>
+                  <h3 className="text-2xl font-bold text-white mb-4">Ready to Analyze Your Website?</h3>
+                  <p className="text-gray-400 mb-8 text-lg leading-relaxed">
+                    Start by submitting your first website URL to unlock powerful AI-driven insights, 
+                    comprehensive performance analysis, and actionable optimization strategies.
+                  </p>
+                  <motion.div
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    <Link
+                      href="/"
+                      className="group px-8 py-4 text-lg font-semibold rounded-xl bg-gradient-to-r from-[#00bf63] to-emerald-500 text-white hover:shadow-lg hover:shadow-[#00bf63]/25 transition-all duration-300 inline-flex items-center"
+                    >
+                      <Plus className="h-5 w-5 mr-2 group-hover:rotate-90 transition-transform" />
+                      Start Your First Analysis
+                      <ChevronRight className="h-5 w-5 ml-2 group-hover:translate-x-1 transition-transform" />
+                    </Link>
+                  </motion.div>
                 </div>
-              ))}
-            </div>
+
+                {/* Features Preview */}
+                <motion.div 
+                  variants={staggerContainer}
+                  className="mt-16 grid grid-cols-1 md:grid-cols-3 gap-8"
+                >
+                  {[
+                    {
+                      icon: <ScanLine className="h-8 w-8 text-[#00bf63]" />,
+                      title: "Deep Website Crawling",
+                      description: "Comprehensive analysis of every page, asset, and element on your website"
+                    },
+                    {
+                      icon: <Brain className="h-8 w-8 text-blue-400" />,
+                      title: "AI-Powered Insights",
+                      description: "Machine learning algorithms provide intelligent recommendations and analysis"
+                    },
+                    {
+                      icon: <TrendingUp className="h-8 w-8 text-emerald-400" />,
+                      title: "Performance Tracking",
+                      description: "Monitor your optimization progress with detailed metrics and reports"
+                    }
+                  ].map((feature, index) => (
+                    <motion.div 
+                      key={index}
+                      variants={scaleIn}
+                      whileHover={{ y: -10, scale: 1.02 }}
+                      className="p-6 rounded-2xl bg-neutral-800/30 backdrop-blur-md border border-neutral-700/50 hover:border-[#00bf63]/30 transition-all duration-300 group"
+                    >
+                      <div className="flex justify-center mb-4">
+                        <div className="p-3 rounded-xl bg-white/5 group-hover:bg-white/10 transition-colors">
+                          {feature.icon}
+                        </div>
+                      </div>
+                      <h4 className="text-lg font-semibold text-white mb-2">{feature.title}</h4>
+                      <p className="text-gray-400">{feature.description}</p>
+                    </motion.div>
+                  ))}
+                </motion.div>
+              </motion.div>
+            </motion.div>
           </div>
         </div>
       </div>
@@ -180,235 +742,295 @@ export default function Dashboard() {
   const totalRecommendations = reports.reduce((sum, r) => sum + (r.recommendations_count || 0), 0)
 
   return (
-    <div className="min-h-screen pt-16">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Header */}
-        <div className="mb-8">
-          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between">
-            <div className="mb-6 lg:mb-0">
-              <h1 className="text-4xl font-bold text-white mb-2">
-                SEO Dashboard
-              </h1>
-              <p className="text-xl text-gray-400">
-                Monitor and optimize your website performance
-              </p>
-            </div>
-            <Link
-              href="/"
-              className="btn-primary group px-6 py-3 rounded-lg hover-lift inline-flex items-center w-fit"
+    <div className="min-h-screen relative overflow-hidden">
+      {/* Video Background */}
+      <div className="fixed inset-0 -z-20">
+        <video
+          autoPlay
+          muted
+          loop
+          playsInline
+          className="absolute inset-0 w-full h-full object-cover"
+        >
+          <source src="" type="video/mp4" />
+        </video>
+        <div className="absolute inset-0 bg-neutral-900/90"></div>
+      </div>
+
+      {/* Animated Background Elements */}
+      <div className="fixed inset-0 -z-10 overflow-hidden pointer-events-none">
+        <motion.div
+          animate={{ 
+            x: [0, 100, 0],
+            y: [0, -50, 0],
+            scale: [1, 1.1, 1]
+          }}
+          transition={{
+            duration: 20,
+            repeat: Infinity,
+            repeatType: "reverse"
+          }}
+          className="absolute top-1/4 right-1/4 w-96 h-96 bg-[#00bf63]/10 rounded-full blur-3xl"
+        />
+        <motion.div
+          animate={{ 
+            x: [0, -80, 0],
+            y: [0, 30, 0],
+            scale: [1, 0.9, 1]
+          }}
+          transition={{
+            duration: 25,
+            repeat: Infinity,
+            repeatType: "reverse"
+          }}
+          className="absolute bottom-1/4 left-1/4 w-80 h-80 bg-[#00bf63]/10 rounded-full blur-3xl"
+        />
+      </div>
+
+      <div className="pt-20 px-4 sm:px-6 lg:px-8 relative z-10">
+        <div className="max-w-7xl mx-auto">
+          <motion.div
+            initial="hidden"
+            animate="visible"
+            variants={staggerContainer}
+          >
+            {/* Header */}
+            <motion.div variants={fadeInUp} className="mb-8">
+              <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between">
+                <div className="mb-6 lg:mb-0">
+                  <h1 className="text-4xl font-bold text-white mb-2">
+                    Analysis Dashboard
+                  </h1>
+                  <p className="text-xl text-gray-300">
+                    Monitor and optimize your website performance with AI insights
+                  </p>
+                </div>
+                <motion.div
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  <Link
+                    href="/"
+                    className="group px-6 py-3 rounded-lg bg-gradient-to-r from-[#00bf63] to-emerald-500 text-white font-semibold hover:shadow-lg hover:shadow-[#00bf63]/25 transition-all duration-300 inline-flex items-center w-fit"
+                  >
+                    <Plus className="h-4 w-4 mr-2 group-hover:rotate-90 transition-transform" />
+                    New Analysis
+                  </Link>
+                </motion.div>
+              </div>
+            </motion.div>
+
+            {/* Stats Overview */}
+            <motion.div 
+              variants={staggerContainer}
+              className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8"
             >
-              <Plus className="h-4 w-4 mr-2 group-hover:rotate-90 transition-transform" />
-              New Analysis
-            </Link>
-          </div>
-        </div>
-
-        {/* Stats Overview */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <div className="card hover-lift group">
-            <div className="flex items-center justify-between mb-4">
-              <div className="p-3 rounded-xl bg-purple-500/20 text-purple-400 group-hover:scale-110 transition-transform">
-                <FileText className="h-6 w-6" />
-              </div>
-              <div className="flex items-center text-green-400 text-sm">
-                <ArrowUp className="h-4 w-4 mr-1" />
-                <span>+12%</span>
-              </div>
-            </div>
-            <div className="text-3xl font-bold text-white mb-1">{reports.length}</div>
-            <div className="text-gray-400 text-sm">Total Reports</div>
-          </div>
-
-          <div className="card hover-lift group">
-            <div className="flex items-center justify-between mb-4">
-              <div className="p-3 rounded-xl bg-green-500/20 text-green-400 group-hover:scale-110 transition-transform">
-                <Target className="h-6 w-6" />
-              </div>
-              <div className="flex items-center text-green-400 text-sm">
-                <ArrowUp className="h-4 w-4 mr-1" />
-                <span>+8%</span>
-              </div>
-            </div>
-            <div className={`text-3xl font-bold mb-1 ${getSeoScoreColor(avgSeoScore)}`}>
-              {avgSeoScore}
-            </div>
-            <div className="text-gray-400 text-sm">Avg SEO Score</div>
-          </div>
-
-          <div className="card hover-lift group">
-            <div className="flex items-center justify-between mb-4">
-              <div className="p-3 rounded-xl bg-purple-500/20 text-purple-400 group-hover:scale-110 transition-transform">
-                <TrendingUp className="h-6 w-6" />
-              </div>
-              <div className="flex items-center text-green-400 text-sm">
-                <ArrowUp className="h-4 w-4 mr-1" />
-                <span>+15%</span>
-              </div>
-            </div>
-            <div className="text-3xl font-bold text-white mb-1">{totalRecommendations}</div>
-            <div className="text-gray-400 text-sm">Total Recommendations</div>
-          </div>
-
-          <div className="card hover-lift group">
-            <div className="flex items-center justify-between mb-4">
-              <div className="p-3 rounded-xl bg-orange-500/20 text-orange-400 group-hover:scale-110 transition-transform">
-                <Clock className="h-6 w-6" />
-              </div>
-              <div className="flex items-center text-green-400 text-sm">
-                <ArrowUp className="h-4 w-4 mr-1" />
-                <span>+5%</span>
-              </div>
-            </div>
-            <div className="text-3xl font-bold text-white mb-1">
-              {reports.length > 0 ? formatDate(reports[0].crawled_at).split(',')[0] : 'N/A'}
-            </div>
-            <div className="text-gray-400 text-sm">Latest Analysis</div>
-          </div>
-        </div>
-
-        {/* Reports Grid */}
-        <div className="mb-8">
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-2xl font-bold text-white">Recent Reports</h2>
-            <div className="text-sm text-gray-400">
-              {reports.length} report{reports.length !== 1 ? 's' : ''} found
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {reports.map((report, index) => (
-              <div
-                key={report.submission_id}
-                className="card hover-lift group transition-all duration-300"
-                style={{
-                  animationDelay: `${index * 100}ms`,
-                  transform: 'translateY(20px)',
-                  opacity: 0,
-                  animation: 'slideUp 0.6s ease forwards'
-                }}
-              >
-                {/* Header */}
-                <div className="flex items-start justify-between mb-4">
-                  <div className="flex-1 min-w-0">
-                    <h3 className="text-lg font-semibold text-white truncate mb-1 group-hover:text-purple-300 transition-colors">
-                      {report.url}
-                    </h3>
-                    <div className="flex items-center text-sm text-gray-400">
-                      <Calendar className="h-4 w-4 mr-1" />
-                      <span>{formatDate(report.crawled_at)}</span>
+              {[
+                {
+                  icon: <FileText className="h-6 w-6" />,
+                  title: "Total Reports",
+                  value: reports.length,
+                  change: "+12%",
+                  color: "from-[#00bf63]/20 to-emerald-500/20",
+                  textColor: "text-[#00bf63]",
+                  borderColor: "border-[#00bf63]/30"
+                },
+                {
+                  icon: <Target className="h-6 w-6" />,
+                  title: "Avg Performance Score",
+                  value: avgSeoScore,
+                  change: "+8%",
+                  color: "from-blue-500/20 to-cyan-500/20",
+                  textColor: getSeoScoreColor(avgSeoScore),
+                  borderColor: "border-blue-500/30"
+                },
+                {
+                  icon: <TrendingUp className="h-6 w-6" />,
+                  title: "Total Issues Found",
+                  value: totalRecommendations,
+                  change: "+15%",
+                  color: "from-orange-500/20 to-red-500/20",
+                  textColor: "text-orange-400",
+                  borderColor: "border-orange-500/30"
+                },
+                {
+                  icon: <Clock className="h-6 w-6" />,
+                  title: "Latest Analysis",
+                  value: reports.length > 0 ? formatDate(reports[0].crawled_at).split(',')[0] : 'N/A',
+                  change: "+5%",
+                  color: "from-purple-500/20 to-pink-500/20",
+                  textColor: "text-purple-400",
+                  borderColor: "border-purple-500/30"
+                }
+              ].map((stat, index) => (
+                <motion.div
+                  key={index}
+                  variants={scaleIn}
+                  whileHover={{ y: -10, scale: 1.02 }}
+                  className={`p-6 rounded-2xl bg-neutral-800/40 backdrop-blur-xl border ${stat.borderColor} hover:border-[#00bf63]/50 transition-all duration-300 group shadow-xl`}
+                >
+                  <div className="flex items-center justify-between mb-4">
+                    <div className={`p-3 rounded-xl bg-gradient-to-r ${stat.color} ${stat.textColor} group-hover:scale-110 transition-transform border ${stat.borderColor}`}>
+                      {stat.icon}
+                    </div>
+                    <div className="flex items-center text-[#00bf63] text-sm font-medium">
+                      <ArrowUp className="h-4 w-4 mr-1" />
+                      <span>{stat.change}</span>
                     </div>
                   </div>
-                  <div className="ml-4 flex-shrink-0">
-                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-500/20 text-green-400 border border-green-500/30">
-                      <div className="w-2 h-2 bg-green-400 rounded-full mr-2 animate-pulse"></div>
-                      Completed
-                    </span>
+                  <div className={`text-3xl font-bold mb-1 ${stat.textColor}`}>
+                    {typeof stat.value === 'string' ? stat.value : stat.value.toLocaleString()}
                   </div>
-                </div>
+                  <div className="text-gray-400 text-sm">{stat.title}</div>
+                </motion.div>
+              ))}
+            </motion.div>
 
-                {/* Score Circle */}
-                <div className="flex items-center justify-center mb-6">
-                  <div className="relative w-24 h-24">
-                    <svg className="w-24 h-24 transform -rotate-90" viewBox="0 0 100 100">
-                      <circle
-                        cx="50"
-                        cy="50"
-                        r="40"
-                        stroke="rgba(255,255,255,0.1)"
-                        strokeWidth="8"
-                        fill="transparent"
-                      />
-                      <circle
-                        cx="50"
-                        cy="50"
-                        r="40"
-                        stroke="url(#gradient)"
-                        strokeWidth="8"
-                        fill="transparent"
-                        strokeDasharray={`${(report.seo_score || 0) * 2.51} 251.2`}
-                        strokeLinecap="round"
-                        className="transition-all duration-1000 ease-out"
-                      />
-                      <defs>
-                        <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                          <stop offset="0%" className={`stop-color-purple-400`} />
-                          <stop offset="100%" className={`stop-color-purple-600`} />
-                        </linearGradient>
-                      </defs>
-                    </svg>
-                    <div className="absolute inset-0 flex items-center justify-center">
-                      <div className="text-center">
-                        <div className={`text-2xl font-bold ${getSeoScoreColor(report.seo_score || 0)}`}>
-                          {report.seo_score || 0}
+            {/* Reports Grid */}
+            <motion.div variants={fadeInUp} className="mb-8">
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-2xl font-bold text-white">Recent Analyses</h2>
+                <div className="text-sm text-gray-400">
+                  {reports.length} report{reports.length !== 1 ? 's' : ''} found
+                </div>
+              </div>
+
+              <motion.div 
+                variants={staggerContainer}
+                className="grid grid-cols-1 lg:grid-cols-2 gap-6"
+              >
+                {reports.map((report, index) => (
+                  <motion.div
+                    key={report.submission_id}
+                    variants={scaleIn}
+                    whileHover={{ y: -5, scale: 1.02 }}
+                    className="p-6 rounded-2xl bg-neutral-800/40 backdrop-blur-xl border border-neutral-700/50 hover:border-[#00bf63]/50 transition-all duration-300 group shadow-xl"
+                  >
+                    {/* Header */}
+                    <div className="flex items-start justify-between mb-4">
+                      <div className="flex-1 min-w-0">
+                        <h3 className="text-lg font-semibold text-white truncate mb-1 group-hover:text-[#00bf63] transition-colors">
+                          {report.url}
+                        </h3>
+                        <div className="flex items-center text-sm text-gray-400">
+                          <Calendar className="h-4 w-4 mr-1" />
+                          <span>{formatDate(report.crawled_at)}</span>
                         </div>
-                        <div className="text-xs text-gray-400">Score</div>
+                      </div>
+                      <div className="ml-4 flex-shrink-0">
+                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-[#00bf63]/20 text-[#00bf63] border border-[#00bf63]/30">
+                          <div className="w-2 h-2 bg-[#00bf63] rounded-full mr-2 animate-pulse"></div>
+                          Completed
+                        </span>
                       </div>
                     </div>
-                  </div>
-                </div>
 
-                {/* Stats */}
-                <div className="grid grid-cols-2 gap-4 mb-6">
-                  <div className="text-center p-3 rounded-lg bg-white/5 group-hover:bg-white/10 transition-colors">
-                    <div className="text-2xl font-bold text-white">{report.recommendations_count || 0}</div>
-                    <div className="text-sm text-gray-400">Issues Found</div>
-                  </div>
-                  <div className="text-center p-3 rounded-lg bg-white/5 group-hover:bg-white/10 transition-colors">
-                    <div className="flex items-center justify-center mb-1">
-                      <Star className="h-4 w-4 text-yellow-400 mr-1" />
-                      <span className="text-2xl font-bold text-white">4.2</span>
+                    {/* Score Circle */}
+                    <div className="flex items-center justify-center mb-6">
+                      <div className="relative w-24 h-24">
+                        <svg className="w-24 h-24 transform -rotate-90" viewBox="0 0 100 100">
+                          <circle
+                            cx="50"
+                            cy="50"
+                            r="40"
+                            stroke="rgba(255,255,255,0.1)"
+                            strokeWidth="8"
+                            fill="transparent"
+                          />
+                          <circle
+                            cx="50"
+                            cy="50"
+                            r="40"
+                            stroke="url(#gradient)"
+                            strokeWidth="8"
+                            fill="transparent"
+                            strokeDasharray={`${(report.seo_score || 0) * 2.51} 251.2`}
+                            strokeLinecap="round"
+                            className="transition-all duration-1000 ease-out"
+                          />
+                          <defs>
+                            <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                              <stop offset="0%" stopColor="#00bf63" />
+                              <stop offset="100%" stopColor="#10b981" />
+                            </linearGradient>
+                          </defs>
+                        </svg>
+                        <div className="absolute inset-0 flex items-center justify-center">
+                          <div className="text-center">
+                            <div className={`text-2xl font-bold ${getSeoScoreColor(report.seo_score || 0)}`}>
+                              {report.seo_score || 0}
+                            </div>
+                            <div className="text-xs text-gray-400">Score</div>
+                          </div>
+                        </div>
+                      </div>
                     </div>
-                    <div className="text-sm text-gray-400">Performance</div>
-                  </div>
-                </div>
 
-                {/* Actions */}
-                <div className="flex items-center justify-between">
-                  <Link
-                    href={`/report/${report.submission_id}`}
-                    className="flex items-center px-4 py-2 bg-purple-500/20 text-purple-400 text-sm font-medium rounded-lg hover:bg-purple-500/30 transition-all group/button"
-                  >
-                    <Eye className="h-4 w-4 mr-2 group-hover/button:scale-110 transition-transform" />
-                    View Report
-                  </Link>
-                  
-                  <a
-                    href={report.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center px-3 py-2 text-gray-400 text-sm hover:text-white transition-colors group/link"
-                  >
-                    <ExternalLink className="h-4 w-4 mr-1 group-hover/link:scale-110 transition-transform" />
-                    Visit Site
-                  </a>
-                </div>
-              </div>
-            ))}
-          </div>
+                    {/* Stats */}
+                    <div className="grid grid-cols-2 gap-4 mb-6">
+                      <div className="text-center p-3 rounded-lg bg-white/5 group-hover:bg-white/10 transition-colors border border-white/10">
+                        <div className="text-2xl font-bold text-white">{report.recommendations_count || 0}</div>
+                        <div className="text-sm text-gray-400">Issues Found</div>
+                      </div>
+                      <div className="text-center p-3 rounded-lg bg-white/5 group-hover:bg-white/10 transition-colors border border-white/10">
+                        <div className="flex items-center justify-center mb-1">
+                          <Activity className="h-4 w-4 text-[#00bf63] mr-1" />
+                          <span className="text-2xl font-bold text-white">4.2</span>
+                        </div>
+                        <div className="text-sm text-gray-400">Performance</div>
+                      </div>
+                    </div>
+
+                    {/* Actions */}
+                    <div className="flex items-center justify-between">
+                      <motion.div
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                      >
+                        <Link
+                          href={`/report/${report.submission_id}`}
+                          className="flex items-center px-4 py-2 bg-[#00bf63]/20 text-[#00bf63] text-sm font-medium rounded-lg hover:bg-[#00bf63]/30 transition-all border border-[#00bf63]/30 group/button"
+                        >
+                          <Eye className="h-4 w-4 mr-2 group-hover/button:scale-110 transition-transform" />
+                          View Report
+                        </Link>
+                      </motion.div>
+                      
+                      <motion.a
+                        href={report.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        whileHover={{ scale: 1.05 }}
+                        className="flex items-center px-3 py-2 text-gray-400 text-sm hover:text-white transition-colors group/link"
+                      >
+                        <ExternalLink className="h-4 w-4 mr-1 group-hover/link:scale-110 transition-transform" />
+                        Visit Site
+                      </motion.a>
+                    </div>
+                  </motion.div>
+                ))}
+              </motion.div>
+            </motion.div>
+
+            {/* Load More */}
+            {reports.length >= limit && (
+              <motion.div 
+                variants={fadeInUp}
+                className="text-center"
+              >
+                <motion.button
+                  onClick={() => setPage(p => p + 1)}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="px-6 py-3 text-white rounded-lg bg-neutral-800/40 backdrop-blur-xl border border-neutral-700/50 hover:border-[#00bf63]/50 hover:bg-neutral-700/40 transition-all"
+                >
+                  Load More Reports
+                </motion.button>
+              </motion.div>
+            )}
+          </motion.div>
         </div>
-
-        {/* Load More */}
-        {reports.length >= limit && (
-          <div className="text-center">
-            <button
-              onClick={() => setPage(p => p + 1)}
-              className="glass px-6 py-3 text-white rounded-lg hover:bg-white/10 transition-all hover-lift"
-            >
-              Load More Reports
-            </button>
-          </div>
-        )}
       </div>
     </div>
   )
 }
-
-/* Add this to your globals.css */
-const additionalStyles = `
-@keyframes slideUp {
-  to {
-    transform: translateY(0);
-    opacity: 1;
-  }
-}
-`

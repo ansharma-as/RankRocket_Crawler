@@ -1,7 +1,8 @@
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import Navigation from "@/components/Navigation";
+import Navbar from "@/components/Navbar";
 import { AuthProvider } from "@/contexts/AuthContext";
+import Footer from "@/components/Footer";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -14,7 +15,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata = {
-  title: "RankRocket - Enhance Your Website's Search Engine Indexing",
+  title: "RankRocket - AI SEO Analysis",
   description: "Analyze your website's SEO performance and get actionable recommendations to improve search engine rankings.",
   keywords: "SEO, search engine optimization, website analysis, ranking, indexing",
 };
@@ -26,15 +27,11 @@ export default function RootLayout({ children }) {
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-gray-50`}
       >
         <AuthProvider>
-          <Navigation />
+          <Navbar />
           <main className="min-h-screen">
             {children}
           </main>
-          <footer className="bg-white border-t border-gray-200 py-8">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-gray-600">
-              <p>&copy; 2024 RankRocket. Enhance your website's search engine indexing.</p>
-            </div>
-          </footer>
+          <Footer />
         </AuthProvider>
       </body>
     </html>
