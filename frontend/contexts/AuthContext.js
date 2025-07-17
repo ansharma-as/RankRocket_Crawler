@@ -68,7 +68,7 @@ const initialState = {
 const AuthContext = createContext()
 
 // API base URL
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL
 
 // Auth provider component
 export function AuthProvider({ children }) {
