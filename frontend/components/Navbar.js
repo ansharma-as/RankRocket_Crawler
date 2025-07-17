@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Menu, X, Home, Zap, HelpCircle } from "lucide-react";
+import { Menu, X, Home, Zap, HelpCircle, BarChart3, Calendar, LogOut, User } from "lucide-react";
 import clsx from "clsx";
 import { useAuth } from "@/contexts/AuthContext";
 
@@ -12,7 +12,8 @@ export default function Navbar() {
   const pathname = usePathname();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const { isAuthenticated, loading } = useAuth();
+  const [showUserMenu, setShowUserMenu] = useState(false);
+  const { isAuthenticated, loading, user, logout } = useAuth();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -22,17 +23,57 @@ export default function Navbar() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  const navigation = [
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (showUserMenu && !event.target.closest('.user-menu')) {
+        setShowUserMenu(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [showUserMenu]);
+
+  // Navigation for unauthenticated users
+  const publicNavigation = [
     { name: "Home", href: "/", icon: Home },
     { name: "Features", href: "/#features", icon: Zap },
     { name: "Support", href: "/support", icon: HelpCircle },
   ];
+
+  // Navigation for authenticated users
+  const privateNavigation = [
+    { name: "Dashboard", href: "/dashboard", icon: Home },
+    { name: "Analytics", href: "/analytics", icon: BarChart3 },
+    { name: "Scheduled Crawls", href: "/scheduled-crawls", icon: Calendar },
+  ];
+
+  const navigation = isAuthenticated ? privateNavigation : publicNavigation;
 
   const handleGetStarted = () => {
     if (isAuthenticated) {
       window.location.href = "/dashboard";
     } else {
       window.location.href = "/auth";
+    }
+  };
+
+  const handleLogout = async () => {
+    try {
+      // Call backend logout endpoint
+      await fetch('http://localhost:8000/auth/logout', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${document.cookie.split('auth_token=')[1]?.split(';')[0]}`
+        }
+      });
+    } catch (error) {
+      console.error('Logout error:', error);
+    } finally {
+      // Always call the auth context logout to clear local state
+      logout();
+      setShowUserMenu(false);
+      window.location.href = "/";
     }
   };
 
@@ -136,7 +177,7 @@ export default function Navbar() {
             })}
           </div>
 
-          {/* Get Started Button */}
+          {/* User Menu / Get Started Button */}
           <div className="hidden md:flex items-center">
             {loading ? (
               <motion.div
@@ -144,6 +185,47 @@ export default function Navbar() {
                 animate={{ rotate: 360 }}
                 transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
               />
+            ) : isAuthenticated ? (
+              <div className="relative user-menu">
+                <motion.button
+                  onClick={() => setShowUserMenu(!showUserMenu)}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="flex items-center space-x-2 px-4 py-2 bg-neutral-800/50 border border-neutral-700/50 rounded-lg text-white hover:border-[#00bf63]/50 transition-all duration-300"
+                >
+                  <div className="w-8 h-8 bg-gradient-to-r from-[#00bf63] to-emerald-500 rounded-full flex items-center justify-center">
+                    <User className="h-4 w-4 text-white" />
+                  </div>
+                  <span className="text-sm font-medium">{user?.full_name || user?.email}</span>
+                </motion.button>
+
+                {/* User Dropdown Menu */}
+                <AnimatePresence>
+                  {showUserMenu && (
+                    <motion.div
+                      initial={{ opacity: 0, y: -10, scale: 0.95 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      exit={{ opacity: 0, y: -10, scale: 0.95 }}
+                      transition={{ duration: 0.2 }}
+                      className="absolute right-0 mt-2 w-48 bg-neutral-800/95 backdrop-blur-xl border border-neutral-700/50 rounded-lg shadow-xl z-50"
+                    >
+                      <div className="p-2">
+                        <div className="px-3 py-2 border-b border-neutral-700/50">
+                          <p className="text-sm font-medium text-white">{user?.full_name || 'User'}</p>
+                          <p className="text-xs text-gray-400">{user?.email}</p>
+                        </div>
+                        <button
+                          onClick={handleLogout}
+                          className="w-full flex items-center space-x-2 px-3 py-2 text-sm text-gray-300 hover:text-white hover:bg-neutral-700/50 rounded-lg transition-colors duration-200"
+                        >
+                          <LogOut className="h-4 w-4" />
+                          <span>Logout</span>
+                        </button>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
             ) : (
               <motion.button
                 onClick={handleGetStarted}
@@ -151,9 +233,7 @@ export default function Navbar() {
                 whileTap={{ scale: 0.95 }}
                 className="relative px-6 py-2.5 bg-gradient-to-r from-[#00bf63] to-emerald-500 text-white text-sm font-semibold rounded-lg overflow-hidden group transition-all duration-300 hover:shadow-lg hover:shadow-[#00bf63]/25"
               >
-                <span className="relative z-10">
-                  {isAuthenticated ? "Dashboard" : "Get Started"}
-                </span>
+                <span className="relative z-10">Get Started</span>
                 <motion.div
                   className="absolute inset-0 bg-gradient-to-r from-emerald-500 to-[#00bf63]"
                   initial={{ x: "100%" }}
@@ -253,7 +333,7 @@ export default function Navbar() {
                     );
                   })}
 
-                  {/* Mobile Get Started Button */}
+                  {/* Mobile Auth Section */}
                   <motion.div
                     initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
@@ -263,15 +343,39 @@ export default function Navbar() {
                     }}
                     className="pt-4 border-t border-[#00bf63]/20 mt-4 mx-2"
                   >
-                    <button
-                      onClick={() => {
-                        handleGetStarted();
-                        setIsMobileMenuOpen(false);
-                      }}
-                      className="w-full flex items-center justify-center px-4 py-3 bg-gradient-to-r from-[#00bf63] to-emerald-500 text-white text-sm font-semibold rounded-lg transition-all duration-300 hover:shadow-lg hover:shadow-[#00bf63]/25"
-                    >
-                      {isAuthenticated ? "Dashboard" : "Get Started"}
-                    </button>
+                    {isAuthenticated ? (
+                      <div className="space-y-2">
+                        <div className="flex items-center space-x-3 px-4 py-3 bg-neutral-700/30 rounded-lg">
+                          <div className="w-8 h-8 bg-gradient-to-r from-[#00bf63] to-emerald-500 rounded-full flex items-center justify-center">
+                            <User className="h-4 w-4 text-white" />
+                          </div>
+                          <div>
+                            <p className="text-sm font-medium text-white">{user?.full_name || 'User'}</p>
+                            <p className="text-xs text-gray-400">{user?.email}</p>
+                          </div>
+                        </div>
+                        <button
+                          onClick={() => {
+                            handleLogout();
+                            setIsMobileMenuOpen(false);
+                          }}
+                          className="w-full flex items-center justify-center space-x-2 px-4 py-3 bg-red-600/20 border border-red-600/30 text-red-400 text-sm font-semibold rounded-lg transition-all duration-300 hover:bg-red-600/30"
+                        >
+                          <LogOut className="h-4 w-4" />
+                          <span>Logout</span>
+                        </button>
+                      </div>
+                    ) : (
+                      <button
+                        onClick={() => {
+                          handleGetStarted();
+                          setIsMobileMenuOpen(false);
+                        }}
+                        className="w-full flex items-center justify-center px-4 py-3 bg-gradient-to-r from-[#00bf63] to-emerald-500 text-white text-sm font-semibold rounded-lg transition-all duration-300 hover:shadow-lg hover:shadow-[#00bf63]/25"
+                      >
+                        Get Started
+                      </button>
+                    )}
                   </motion.div>
                 </div>
               </div>

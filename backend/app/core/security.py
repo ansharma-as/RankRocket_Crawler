@@ -21,17 +21,25 @@ async def get_current_user(
         headers={"WWW-Authenticate": "Bearer"},
     )
     
+    print(f"🔍 Debug: get_current_user called with credentials: {credentials}")
+    
     if not credentials:
+        print(f"🔍 Debug: No credentials provided")
         raise credentials_exception
     
+    print(f"🔍 Debug: Verifying token: {credentials.credentials[:50]}...")
     token_data = auth_service.verify_token(credentials.credentials)
     if token_data is None:
+        print(f"🔍 Debug: Token verification failed")
         raise credentials_exception
     
+    print(f"🔍 Debug: Token verified, getting user by ID: {token_data.user_id}")
     user = await auth_service.get_user_by_id(token_data.user_id)
     if user is None:
+        print(f"🔍 Debug: User not found for ID: {token_data.user_id}")
         raise credentials_exception
     
+    print(f"🔍 Debug: Authentication successful for user: {user.email}")
     return user
 
 async def get_current_active_user(current_user: User = Depends(get_current_user)) -> User:

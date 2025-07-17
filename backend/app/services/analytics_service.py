@@ -73,9 +73,18 @@ class AnalyticsService:
                 seo_metrics = result.get("seo_metrics", {})
                 
                 trends["dates"].append(crawl_date)
-                trends["load_times"].append(seo_metrics.get("load_time") or 0)
-                trends["page_sizes"].append(seo_metrics.get("page_size") or 0)
-                trends["accessibility_scores"].append(seo_metrics.get("accessibility_score") or 0)
+                
+                # Safely append load_time with proper null handling
+                load_time = seo_metrics.get("load_time")
+                trends["load_times"].append(load_time if load_time is not None and isinstance(load_time, (int, float)) else 0)
+                
+                # Safely append page_size with proper null handling  
+                page_size = seo_metrics.get("page_size")
+                trends["page_sizes"].append(page_size if page_size is not None and isinstance(page_size, (int, float)) else 0)
+                
+                # Safely append accessibility_score with proper null handling
+                accessibility_score = seo_metrics.get("accessibility_score")
+                trends["accessibility_scores"].append(accessibility_score if accessibility_score is not None and isinstance(accessibility_score, (int, float)) else 0)
                 
                 # Calculate SEO score for this result
                 recommendations = await self.db.recommendations.find(
@@ -97,9 +106,10 @@ class AnalyticsService:
                         if priority in issue_counts:
                             issue_counts[priority] += 1
                 
-                trends["issues_by_priority"]["high"].append(issue_counts["high"])
-                trends["issues_by_priority"]["medium"].append(issue_counts["medium"])
-                trends["issues_by_priority"]["low"].append(issue_counts["low"])
+                # Safely append issue counts
+                trends["issues_by_priority"]["high"].append(issue_counts.get("high", 0))
+                trends["issues_by_priority"]["medium"].append(issue_counts.get("medium", 0))
+                trends["issues_by_priority"]["low"].append(issue_counts.get("low", 0))
             except Exception:
                 # Skip problematic records
                 continue
@@ -121,14 +131,14 @@ class AnalyticsService:
             
             # Deduct points for performance
             load_time = seo_metrics.get("load_time")
-            if load_time is not None and load_time > 3:
+            if load_time is not None and isinstance(load_time, (int, float)) and load_time > 3:
                 score -= min(20, (load_time - 3) * 5)
             
             # Deduct points for recommendations
             if recommendations:
                 for rec in recommendations:
                     impact = rec.get("impact_score", 0.5)
-                    if impact is not None:
+                    if impact is not None and isinstance(impact, (int, float)):
                         if rec.get("priority") == "high":
                             score -= impact * 8
                         elif rec.get("priority") == "medium":
@@ -589,10 +599,33 @@ class AnalyticsService:
         }
         
         if recent_crawls:
-            load_times = [crawl["seo_metrics"].get("load_time", 0) for crawl in recent_crawls if crawl["seo_metrics"].get("load_time") is not None]
-            page_sizes = [crawl["seo_metrics"].get("page_size", 0) for crawl in recent_crawls if crawl["seo_metrics"].get("page_size") is not None]
-            mobile_friendly = [crawl["seo_metrics"].get("mobile_friendly", False) for crawl in recent_crawls]
-            ssl_enabled = [crawl["seo_metrics"].get("ssl_info", {}).get("ssl_enabled", False) for crawl in recent_crawls]
+            # Safely extract load times, filtering out None and invalid values
+            load_times = []
+            for crawl in recent_crawls:
+                load_time = crawl.get("seo_metrics", {}).get("load_time")
+                if load_time is not None and isinstance(load_time, (int, float)) and load_time > 0:
+                    load_times.append(load_time)
+            
+            # Safely extract page sizes, filtering out None and invalid values
+            page_sizes = []
+            for crawl in recent_crawls:
+                page_size = crawl.get("seo_metrics", {}).get("page_size")
+                if page_size is not None and isinstance(page_size, (int, float)) and page_size > 0:
+                    page_sizes.append(page_size)
+            
+            # Safely extract mobile friendly status
+            mobile_friendly = []
+            for crawl in recent_crawls:
+                mobile_status = crawl.get("seo_metrics", {}).get("mobile_friendly")
+                if mobile_status is not None:
+                    mobile_friendly.append(bool(mobile_status))
+            
+            # Safely extract SSL status
+            ssl_enabled = []
+            for crawl in recent_crawls:
+                ssl_status = crawl.get("seo_metrics", {}).get("ssl_info", {}).get("ssl_enabled")
+                if ssl_status is not None:
+                    ssl_enabled.append(bool(ssl_status))
             
             performance_metrics = {
                 "avg_load_time": round(sum(load_times) / len(load_times), 2) if load_times else 0,

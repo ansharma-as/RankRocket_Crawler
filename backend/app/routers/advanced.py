@@ -1,6 +1,8 @@
 from fastapi import APIRouter, HTTPException, Depends, BackgroundTasks
 from typing import List, Optional
 from app.core.database import get_database
+from app.core.security import get_current_active_user
+from app.models.schemas import User
 from app.services.scheduler import CrawlScheduler, CrawlPriority, CrawlFrequency
 from app.services.report_generator import ReportGenerator
 from app.services.analytics_service import AnalyticsService
@@ -150,6 +152,7 @@ async def generate_comprehensive_report(
 async def get_seo_trends(
     url: Optional[str] = None,
     days: int = 30,
+    current_user: User = Depends(get_current_active_user),
     db=Depends(get_database)
 ):
     """Get SEO performance trends"""
@@ -169,6 +172,7 @@ class DomainComparisonRequest(BaseModel):
 @router.post("/analytics/compare")
 async def compare_domains(
     request: DomainComparisonRequest,
+    current_user: User = Depends(get_current_active_user),
     db=Depends(get_database)
 ):
     """Compare SEO performance across multiple domains"""
@@ -185,6 +189,7 @@ async def compare_domains(
 @router.get("/analytics/keywords/{url:path}")
 async def analyze_keywords(
     url: str,
+    current_user: User = Depends(get_current_active_user),
     db=Depends(get_database)
 ):
     """Analyze keyword performance for a URL"""
@@ -199,7 +204,10 @@ async def analyze_keywords(
 
 
 @router.get("/analytics/dashboard")
-async def get_performance_dashboard(db=Depends(get_database)):
+async def get_performance_dashboard(
+    current_user: User = Depends(get_current_active_user),
+    db=Depends(get_database)
+):
     """Get overall performance dashboard"""
     try:
         analytics = AnalyticsService(db)

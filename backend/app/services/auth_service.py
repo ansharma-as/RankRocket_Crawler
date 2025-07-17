@@ -68,21 +68,34 @@ class AuthService:
     def verify_token(self, token: str, token_type: str = "access") -> Optional[TokenData]:
         """Verify JWT token and return token data."""
         try:
+            print(f"🔍 Debug: Verifying token: {token[:50]}...")
+            print(f"🔍 Debug: Expected token type: {token_type}")
+            print(f"🔍 Debug: JWT Secret Key: {settings.JWT_SECRET_KEY}")
+            print(f"🔍 Debug: JWT Algorithm: {settings.JWT_ALGORITHM}")
+            
             payload = jwt.decode(token, settings.JWT_SECRET_KEY, algorithms=[settings.JWT_ALGORITHM])
+            print(f"🔍 Debug: Decoded payload: {payload}")
             
             # Check token type
             if payload.get("type") != token_type:
+                print(f"🔍 Debug: Token type mismatch. Got: {payload.get('type')}, Expected: {token_type}")
                 return None
             
             email: str = payload.get("sub")
             user_id: str = payload.get("user_id")
             
+            print(f"🔍 Debug: Extracted email: {email}")
+            print(f"🔍 Debug: Extracted user_id: {user_id}")
+            
             if email is None or user_id is None:
+                print(f"🔍 Debug: Missing email or user_id in token")
                 return None
             
             token_data = TokenData(email=email, user_id=user_id)
+            print(f"🔍 Debug: Token verification successful")
             return token_data
-        except JWTError:
+        except JWTError as e:
+            print(f"🔍 Debug: JWT Error: {e}")
             return None
     
     async def get_user_by_email(self, email: str) -> Optional[User]:
@@ -100,12 +113,17 @@ class AuthService:
         db = await self.get_db()
         
         try:
+            print(f"🔍 Debug: Looking for user with ID: {user_id}")
             user_data = await db.users.find_one({"_id": ObjectId(user_id)})
+            print(f"🔍 Debug: Found user data: {user_data}")
+            
             if user_data:
                 user_data = convert_objectid_for_pydantic(user_data)
-                return User(**user_data)
-        except Exception:
-            pass
+                user = User(**user_data)
+                print(f"🔍 Debug: Created User object: {user}")
+                return user
+        except Exception as e:
+            print(f"🔍 Debug: Error in get_user_by_id: {e}")
         return None
     
     async def get_user_by_google_id(self, google_id: str) -> Optional[User]:

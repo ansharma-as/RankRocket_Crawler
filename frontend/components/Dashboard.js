@@ -529,7 +529,7 @@ export default function Dashboard() {
             playsInline
             className="absolute inset-0 w-full h-full object-cover"
           >
-            <source src="" type="video/mp4" />
+            <source src="/video.mp4" type="video/mp4" />
           </video>
           <div className="absolute inset-0 bg-neutral-900/90"></div>
         </div>

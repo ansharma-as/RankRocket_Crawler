@@ -1,5 +1,18 @@
 // API service layer for RankRocket backend integration
+import Cookies from 'js-cookie';
+
 const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8000';
+
+// Helper function to get auth token
+const getAuthToken = () => {
+  return Cookies.get('auth_token');
+};
+
+// Helper function to get auth headers
+const getAuthHeaders = () => {
+  const token = getAuthToken();
+  return token ? { 'Authorization': `Bearer ${token}` } : {};
+};
 
 // Helper function to handle API responses
 const handleResponse = async (response) => {
@@ -33,13 +46,23 @@ export const crawlApi = {
 export const reportsApi = {
   // Get SEO report
   getReport: async (submissionId) => {
-    const response = await fetch(`${BACKEND_URL}/api/v1/report/${submissionId}`);
+    const response = await fetch(`${BACKEND_URL}/api/v1/report/${submissionId}`, {
+      headers: {
+        'Content-Type': 'application/json',
+        ...getAuthHeaders(),
+      },
+    });
     return handleResponse(response);
   },
 
   // Get all reports
   getAllReports: async (skip = 0, limit = 10) => {
-    const response = await fetch(`${BACKEND_URL}/api/v1/reports?skip=${skip}&limit=${limit}`);
+    const response = await fetch(`${BACKEND_URL}/api/v1/reports?skip=${skip}&limit=${limit}`, {
+      headers: {
+        'Content-Type': 'application/json',
+        ...getAuthHeaders(),
+      },
+    });
     return handleResponse(response);
   },
 };
@@ -89,7 +112,12 @@ export const analyticsApi = {
     const queryParams = new URLSearchParams({ days: days.toString() });
     if (url) queryParams.append('url', url);
     
-    const response = await fetch(`${BACKEND_URL}/api/v1/advanced/analytics/trends?${queryParams}`);
+    const response = await fetch(`${BACKEND_URL}/api/v1/advanced/analytics/trends?${queryParams}`, {
+      headers: {
+        'Content-Type': 'application/json',
+        ...getAuthHeaders(),
+      },
+    });
     return handleResponse(response);
   },
 
@@ -97,7 +125,10 @@ export const analyticsApi = {
   compareDomains: async (urls) => {
     const response = await fetch(`${BACKEND_URL}/api/v1/advanced/analytics/compare`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 
+        'Content-Type': 'application/json',
+        ...getAuthHeaders(),
+      },
       body: JSON.stringify({ urls }),
     });
     return handleResponse(response);
@@ -106,13 +137,23 @@ export const analyticsApi = {
   // Keyword analysis
   getKeywordAnalysis: async (url) => {
     const encodedUrl = encodeURIComponent(url);
-    const response = await fetch(`${BACKEND_URL}/api/v1/advanced/analytics/keywords/${encodedUrl}`);
+    const response = await fetch(`${BACKEND_URL}/api/v1/advanced/analytics/keywords/${encodedUrl}`, {
+      headers: {
+        'Content-Type': 'application/json',
+        ...getAuthHeaders(),
+      },
+    });
     return handleResponse(response);
   },
 
   // Performance dashboard
   getDashboard: async () => {
-    const response = await fetch(`${BACKEND_URL}/api/v1/advanced/analytics/dashboard`);
+    const response = await fetch(`${BACKEND_URL}/api/v1/advanced/analytics/dashboard`, {
+      headers: {
+        'Content-Type': 'application/json',
+        ...getAuthHeaders(),
+      },
+    });
     return handleResponse(response);
   },
 };

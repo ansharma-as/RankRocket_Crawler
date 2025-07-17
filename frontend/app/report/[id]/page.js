@@ -11,8 +11,18 @@ export async function generateMetadata({ params }) {
     if (response.ok) {
       const report = await response.json()
       return {
-        title: `SEO Report for ${report.url} - RankRocket`,
-        description: `SEO analysis report for ${report.url} with recommendations and insights`,
+        title: `AI Analysis Report for ${report.url} - CrawlAI`,
+        description: `Comprehensive AI-powered website analysis for ${report.url} with performance metrics, issues, and optimization recommendations`,
+        openGraph: {
+          title: `AI Analysis Report for ${report.url}`,
+          description: `Comprehensive website analysis with AI-powered insights and recommendations`,
+          type: 'website',
+        },
+        twitter: {
+          card: 'summary_large_image',
+          title: `AI Analysis Report for ${report.url}`,
+          description: `Comprehensive website analysis with AI-powered insights`,
+        }
       }
     }
   } catch (error) {
@@ -20,8 +30,13 @@ export async function generateMetadata({ params }) {
   }
 
   return {
-    title: 'SEO Report - RankRocket',
-    description: 'View detailed SEO analysis report with recommendations',
+    title: 'AI Website Analysis Report - CrawlAI',
+    description: 'View detailed AI-powered website analysis report with performance metrics, issues, and optimization recommendations',
+    openGraph: {
+      title: 'AI Website Analysis Report - CrawlAI',
+      description: 'AI-powered website analysis with comprehensive insights and recommendations',
+      type: 'website',
+    }
   }
 }
 
