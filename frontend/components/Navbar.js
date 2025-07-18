@@ -60,7 +60,7 @@ export default function Navbar() {
   const handleLogout = async () => {
     try {
       // Call backend logout endpoint
-      await fetch('http://localhost:8000/auth/logout', {
+      await fetch(`${BACKEND_API_URL}/auth/logout`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
