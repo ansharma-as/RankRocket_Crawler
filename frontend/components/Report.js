@@ -692,6 +692,7 @@ import {
   ChevronRight
 } from 'lucide-react'
 import { reportsApi } from '@/services/api'
+import LoadingSpinner from '@/components/LoadingSpinner'
 
 const fadeInUp = {
   hidden: { opacity: 0, y: 30 },
@@ -826,15 +827,13 @@ export default function Report({ submissionId }) {
               animate={{ opacity: 1 }}
               transition={{ duration: 0.6 }}
             >
-              <div className="text-center p-8 rounded-2xl bg-neutral-800/40 backdrop-blur-xl border border-neutral-700/50">
-                <motion.div
-                  animate={{ rotate: 360 }}
-                  transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
-                  className="h-12 w-12 rounded-full border-4 border-[#00bf63]/20 border-t-[#00bf63] mx-auto mb-4"
-                />
-                <h2 className="text-xl font-semibold text-white mb-2">Loading Report...</h2>
-                <p className="text-gray-400">Retrieving your analysis results</p>
-              </div>
+              <LoadingSpinner 
+                color="#00bf63"
+                size={40}
+                text="Loading Report..."
+                showText={true}
+                className="p-8 rounded-2xl bg-neutral-800/40 backdrop-blur-xl border border-neutral-700/50"
+              />
             </motion.div>
           </div>
         </div>

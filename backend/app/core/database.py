@@ -37,6 +37,12 @@ async def create_indexes():
     try:
         # User collection indexes
         await database.users.create_index("email", unique=True)
+        
+        # Drop existing google_id index if it exists and recreate it properly
+        try:
+            await database.users.drop_index("google_id_1")
+        except:
+            pass  # Index might not exist
         await database.users.create_index("google_id", unique=True, sparse=True)
         
         # URL submission indexes

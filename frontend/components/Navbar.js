@@ -181,7 +181,7 @@ export default function Navbar() {
           <div className="hidden md:flex items-center">
             {loading ? (
               <motion.div
-                className="w-8 h-8 border-2 border-[#00bf63]/30 border-t-[#00bf63] rounded-full"
+                className="w-8 h-8  border-t-[#00bf63] rounded-full"
                 animate={{ rotate: 360 }}
                 transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
               />
@@ -191,7 +191,7 @@ export default function Navbar() {
                   onClick={() => setShowUserMenu(!showUserMenu)}
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
-                  className="flex items-center space-x-2 px-4 py-2 bg-neutral-800/50 border border-neutral-700/50 rounded-lg text-white hover:border-[#00bf63]/50 transition-all duration-300"
+                  className="flex items-center space-x-2 px-4 py-2 rounded-lg text-white hover:border-[#00bf63]/50 transition-all duration-300"
                 >
                   <div className="w-8 h-8 bg-gradient-to-r from-[#00bf63] to-emerald-500 rounded-full flex items-center justify-center">
                     <User className="h-4 w-4 text-white" />

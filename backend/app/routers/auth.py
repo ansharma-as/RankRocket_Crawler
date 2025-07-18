@@ -189,7 +189,15 @@ async def google_callback(code: str, state: str = None):
             # Login or create user
             tokens = await auth_service.login_google_user(google_data)
             
-            return tokens
+            # Redirect to frontend with tokens
+            from fastapi.responses import RedirectResponse
+            import urllib.parse
+            
+            # Create redirect URL with tokens
+            frontend_url = "http://localhost:3000/auth"
+            redirect_url = f"{frontend_url}?success=true&access_token={tokens.access_token}&refresh_token={tokens.refresh_token}&expires_in={tokens.expires_in}"
+            
+            return RedirectResponse(url=redirect_url, status_code=302)
             
     except httpx.RequestError as e:
         raise HTTPException(

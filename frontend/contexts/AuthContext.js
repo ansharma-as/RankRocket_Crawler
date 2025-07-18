@@ -168,6 +168,88 @@ export function AuthProvider({ children }) {
     dispatch({ type: 'LOGOUT' })
   }
 
+  // Google OAuth function
+  const loginWithGoogle = async () => {
+    dispatch({ type: 'LOGIN_START' })
+    
+    try {
+      // Get Google OAuth URL from backend
+      const response = await axios.get(`${API_BASE_URL}/auth/google`)
+      const { auth_url } = response.data
+      
+      // Redirect to Google OAuth
+      window.location.href = auth_url
+      
+      return { success: true }
+    } catch (error) {
+      const errorMessage = error.response?.data?.detail || 'Google OAuth failed'
+      dispatch({
+        type: 'LOGIN_ERROR',
+        payload: errorMessage
+      })
+      return { success: false, error: errorMessage }
+    }
+  }
+
+  // Handle OAuth callback (for when user returns from Google)
+  const handleOAuthCallback = async () => {
+    const urlParams = new URLSearchParams(window.location.search)
+    const success = urlParams.get('success')
+    const accessToken = urlParams.get('access_token')
+    const refreshToken = urlParams.get('refresh_token')
+    const error = urlParams.get('error')
+    
+    if (error) {
+      dispatch({
+        type: 'LOGIN_ERROR',
+        payload: 'Google OAuth was cancelled or failed'
+      })
+      return { success: false, error: 'Google OAuth was cancelled' }
+    }
+    
+    if (success && accessToken) {
+      dispatch({ type: 'LOGIN_START' })
+      
+      try {
+        // Get user profile with the token
+        const userResponse = await axios.get(`${API_BASE_URL}/auth/me`, {
+          headers: {
+            Authorization: `Bearer ${accessToken}`
+          }
+        })
+        
+        const user = userResponse.data
+        
+        // Store in cookies
+        Cookies.set('auth_token', accessToken, { expires: 7 })
+        Cookies.set('user_data', JSON.stringify(user), { expires: 7 })
+        
+        dispatch({
+          type: 'LOGIN_SUCCESS',
+          payload: { user, token: accessToken }
+        })
+        
+        // Clean up URL
+        window.history.replaceState({}, document.title, window.location.pathname)
+        
+        return { success: true }
+      } catch (error) {
+        const errorMessage = error.response?.data?.detail || 'Failed to get user profile'
+        dispatch({
+          type: 'LOGIN_ERROR',
+          payload: errorMessage
+        })
+        
+        // Clean up URL even on error
+        window.history.replaceState({}, document.title, window.location.pathname)
+        
+        return { success: false, error: errorMessage }
+      }
+    }
+    
+    return { success: false, error: 'No valid OAuth response received' }
+  }
+
   // Clear error function
   const clearError = () => {
     dispatch({ type: 'CLEAR_ERROR' })
@@ -204,6 +286,8 @@ export function AuthProvider({ children }) {
     ...state,
     login,
     register,
+    loginWithGoogle,
+    handleOAuthCallback,
     logout,
     clearError,
     getAuthenticatedAxios

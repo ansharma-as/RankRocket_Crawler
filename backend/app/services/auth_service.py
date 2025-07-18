@@ -171,7 +171,9 @@ class AuthService:
         )
         
         db = await self.get_db()
-        result = await db.users.insert_one(user.model_dump(by_alias=True, exclude={"id"}))
+        # Exclude None values to prevent issues with sparse indexes
+        user_data = user.model_dump(by_alias=True, exclude={"id"}, exclude_none=True)
+        result = await db.users.insert_one(user_data)
         user.id = str(result.inserted_id)  # Convert ObjectId to string
         
         return user

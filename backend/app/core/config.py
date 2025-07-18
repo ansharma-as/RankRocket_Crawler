@@ -16,15 +16,15 @@ class Settings(BaseSettings):
     # Crawler settings
     MAX_CONCURRENT_CRAWLS: int = 10
     CRAWL_TIMEOUT: int = 30
-    USER_AGENT: str = "RankRocket/1.0 (+https://rankrocket.com)"
+    USER_AGENT: str = "RankRocket/1.0 (+https://rankrocket.vercel.app)"
     
     # Background tasks
     REDIS_URL: str = "redis://localhost:6379"
     
     # Authentication
-    JWT_SECRET_KEY: str = "your-secret-key-change-in-production"
+    JWT_SECRET_KEY: str = "AnshSecretServer"
     JWT_ALGORITHM: str = "HS256"
-    ACCESS_TOKEN_EXPIRE_MINUTES: int = 1440  # 24 hours for testing
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 24 * 7  # 7 days for testing
     REFRESH_TOKEN_EXPIRE_DAYS: int = 7
     
     # Google OAuth

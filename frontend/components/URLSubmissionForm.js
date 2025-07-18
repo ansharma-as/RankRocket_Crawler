@@ -4,8 +4,9 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Search, AlertCircle, CheckCircle, Loader2, Rocket, Globe, Zap } from 'lucide-react'
 import { crawlApi } from '@/services/api'
+import { InlineLoader } from '@/components/LoadingSpinner'
 
-export default function URLSubmissionForm() {
+export default function URLSubmissionForm({ onSuccess }) {
   const [url, setUrl] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [status, setStatus] = useState(null) // null, 'success', 'error'
@@ -28,10 +29,17 @@ export default function URLSubmissionForm() {
       setMessage(`Analysis started! Submission ID: ${data.submission_id}`)
       setUrl('')
       
-      // Navigate to dashboard after 2 seconds
-      setTimeout(() => {
-        router.push('/dashboard')
-      }, 2000)
+      // Call onSuccess callback if provided (for modal usage)
+      if (onSuccess) {
+        setTimeout(() => {
+          onSuccess()
+        }, 2000)
+      } else {
+        // Navigate to dashboard after 2 seconds (for standalone usage)
+        setTimeout(() => {
+          router.push('/dashboard')
+        }, 2000)
+      }
     } catch (error) {
       setStatus('error')
       setMessage(error.message || 'Failed to submit URL for analysis')
@@ -96,10 +104,11 @@ export default function URLSubmissionForm() {
               className="w-full btn-primary group px-8 py-4 text-lg font-semibold rounded-xl hover-lift disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:transform-none disabled:hover:shadow-none flex items-center justify-center"
             >
               {isLoading ? (
-                <>
-                  <Loader2 className="h-5 w-5 mr-3 animate-spin" />
-                  Analyzing Your Website...
-                </>
+                <InlineLoader 
+                  color="#ffffff" 
+                  size={20} 
+                  text="Analyzing Your Website..." 
+                />
               ) : (
                 <>
                   <Rocket className="h-5 w-5 mr-3 group-hover:rotate-12 transition-transform" />
@@ -155,17 +164,21 @@ export default function URLSubmissionForm() {
 
           {/* Loading State */}
           {isLoading && (
-            <div className="mt-6 p-6 bg-purple-500/10 border border-purple-500/30 rounded-xl">
+            <div className="mt-6 p-6 bg-[#00bf63]/10 border border-[#00bf63]/30 rounded-xl">
               <div className="flex items-center">
-                <div className="loading-spinner h-6 w-6 rounded-full border-2 border-purple-500/20 border-t-purple-500 mr-4"></div>
+                <InlineLoader 
+                  color="#00bf63" 
+                  size={25} 
+                  className="mr-4" 
+                />
                 <div className="flex-1">
-                  <h3 className="font-semibold text-purple-400 mb-2">Analyzing your website...</h3>
-                  <p className="text-sm text-purple-300 leading-relaxed">
+                  <h3 className="font-semibold text-[#00bf63] mb-2">Analyzing your website...</h3>
+                  <p className="text-sm text-[#00bf63]/80 leading-relaxed">
                     Our AI is crawling your site and analyzing SEO performance. 
                     This may take a few moments to complete.
                   </p>
-                  <div className="mt-3 w-full bg-purple-500/20 rounded-full h-2">
-                    <div className="bg-gradient-to-r from-purple-500 to-purple-400 h-2 rounded-full animate-pulse" style={{width: '60%'}}></div>
+                  <div className="mt-3 w-full bg-[#00bf63]/20 rounded-full h-2">
+                    <div className="bg-gradient-to-r from-[#00bf63] to-emerald-400 h-2 rounded-full animate-pulse" style={{width: '60%'}}></div>
                   </div>
                 </div>
               </div>
