@@ -194,7 +194,7 @@ async def google_callback(code: str, state: str = None):
             import urllib.parse
             
             # Create redirect URL with tokens
-            frontend_url = "http://localhost:3000/auth"
+            frontend_url = "https://rank-rocket-crawler.vercel.app/auth"
             redirect_url = f"{frontend_url}?success=true&access_token={tokens.access_token}&refresh_token={tokens.refresh_token}&expires_in={tokens.expires_in}"
             
             return RedirectResponse(url=redirect_url, status_code=302)
